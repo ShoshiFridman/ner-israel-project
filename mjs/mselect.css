@@ -1,0 +1,23 @@
+.mselect-list{
+    max-height:100px;
+    overflow: auto;
+    width:fit-content;
+    border: 1px solid gray;
+    padding-left: 2px;
+    padding-right: 2px;
+    min-width:100%;
+    background-color: white;
+}
+.mslect-item{
+    min-height:20px;
+    border: solid 1px silver;
+    border-radius: 4px;
+    padding: 4px;
+    margin-top: 2px;
+    background-color: white;
+    font-size:11pt;
+
+}
+.mslect-item:focus {
+    background-color: silver;
+}
