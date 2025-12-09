@@ -9,6 +9,8 @@ function updateIsrashrayAndOther(row) {
   let baseIsra = parseFloat(row._original_israshray) || 0;
   let baseOther = parseFloat(row._original_other) || 0;
 let betYitzhak= parseFloat(row["בית יצחק"]) || 0;
+let betYitzhakPagi= parseFloat(row["בי פאגי"]) || 0;
+
 let gmach= parseFloat(row["גמח נר ישראל"]) || 0;
 let half=0;
   if (taveiKnia !== 0) {
@@ -21,9 +23,9 @@ let half=0;
     row["ישראשראי"] = baseIsra;
     row["נר ישראל"] = baseOther;
   }
-  if(betYitzhak!==0||gmach!==0)
+  if(betYitzhak!==0||gmach!==0||betYitzhakPagi!==0)
   {
-    row["נר ישראל"] =baseOther- betYitzhak- gmach-half;
+    row["נר ישראל"] =baseOther- betYitzhak- gmach-half-betYitzhakPagi;
   }
   /*if(gmach!==0)
   {
@@ -695,6 +697,8 @@ if (maaserKvua!=0) {
   row["ישראשראי"] = israDefault;
   row["נר ישראל"] = row["סכום סופי לאחר מעשר"] -row["ישראשראי"];
   row["בית יצחק"] = parseFloat(a["בית_יצחק"] || 0);
+  row["בי פאגי"] = parseFloat(a["בית_יצחק_פאגי"] || 0);
+
   row["גמח נר ישראל"] = parseFloat(a["גמח_נר_ישראל"] || 0);
 
   row["תוים"] = parseFloat(a["תוים"] || 0);
@@ -705,7 +709,7 @@ if (maaserKvua!=0) {
     /*if (row["תוים"] > 0) {
       updateIsrashrayAndOther(row);
     }*/
-    if (row["תוים"] > 0||row["בית יצחק"] > 0||row["גמח נר ישראל"] > 0) {
+    if (row["תוים"] > 0||row["בית יצחק"] > 0||row["גמח נר ישראל"] > 0||row["בי פאגי"]>0) {
       updateIsrashrayAndOther(row);
     }
     
@@ -765,6 +769,8 @@ headers["מעשר באחוזים"] = "מעשר באחוזים";
  headers["ישראשראי"] = "ישראשראי";
  headers["נר ישראל"] = "נר ישראל";
  headers["בית יצחק"] = "בית יצחק";
+ headers["בי פאגי"] = "בי פאגי";
+
  headers["גמח נר ישראל"] = "גמח נר ישראל";
 
  headers["תוים"] = "תוים";
@@ -807,6 +813,8 @@ fieldtypes["חנות תוים"] = "combo";
 fieldtypes["שמור כקבוע"] = "button";
 
 fieldtypes["בית יצחק"] = "numeric";
+fieldtypes["בי פאגי"] = "numeric";
+
 fieldtypes["גמח נר ישראל"] = "numeric";
 
 
@@ -844,7 +852,7 @@ fieldtypes["גמח נר ישראל"] = "numeric";
 
       // עדכון שדה בשורה
       row[field] = value;
-      if (field === "תוים"||field === "בית יצחק"||field === "גמח נר ישראל") {
+      if (field === "תוים"||field === "בית יצחק"||field === "גמח נר ישראל"||field === "בי פאגי") {
             //tbl.data[rowIndex]["תוים"] = parseFloat(value) || 0;
 
         updateIsrashrayAndOther(row); // פונקציית חישוב שאתה יוצר

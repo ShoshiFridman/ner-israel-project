@@ -163,6 +163,8 @@
   <label>בחר מקור הפקדה:</label>
   <select id="depositSource">
     <option value="בית_יצחק">בית יצחק</option>
+    <option value="בית_יצחק_פאגי">בי פאגי</option>
+
     <option value="גמח_נר_ישראל">גמח נר ישראל</option>
   </select><br><br>
   <label>סכום:</label>

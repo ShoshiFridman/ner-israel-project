@@ -1,0 +1,3 @@
+avrech_id=1543 | name=אביראש מיכאל | DB value=100 | amount=100
+avrech_id=446 | name=פיונטק יעקב | DB value=100 | amount=100
+TOTAL amount for beit_yitzchak_pagi: 200

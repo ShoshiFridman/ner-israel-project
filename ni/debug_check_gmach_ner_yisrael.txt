@@ -1,0 +1,2 @@
+avrech_id=446 | name=פיונטק יעקב | DB value=100 | amount=100
+TOTAL amount for gmach_ner_yisrael: 100

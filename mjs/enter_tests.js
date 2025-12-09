@@ -118,6 +118,8 @@ async function saveAllTests() {
      const sumTav= parseInt(row["תוים"]) || 0;
      const shopTav =row["חנות תוים"];
     const betYitzhak=parseInt(row["בית יצחק"]) || 0;
+    const betYitzhakPagi=parseInt(row["בי פאגי"]) || 0;
+
     const gmach=parseInt(row["גמח נר ישראל"]) || 0;
 
       // נוסיף לרשימת התשלומים
@@ -132,6 +134,7 @@ async function saveAllTests() {
        תווי_קניה_שח:sumTav,
        חנות_תו:shopTav,
       בית_יצחק:betYitzhak,
+      בית_יצחק_פאגי:betYitzhakPagi,
        גמח_נר_ישראל:gmach
 // סכום_אחר_מעשר:afterMaaser
       // ישראשראי:isra.toFixed(2),

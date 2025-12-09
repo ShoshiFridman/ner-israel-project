@@ -181,6 +181,7 @@ SELECT
   COALESCE(pay."סכום_תיקונים", 0) AS "סכום_תיקונים",
   COALESCE(pay."סכום_כולל", 0) AS "סכום_כולל",
   COALESCE(pay."בית_יצחק", 0) AS "בית_יצחק",
+  COALESCE(pay."בית_יצחק_פאגי", 0) AS "בית_יצחק_פאגי",
   COALESCE(pay."גמח_נר_ישראל", 0) AS "גמח_נר_ישראל",
   
   COALESCE(pay."תווי_קניה_שח", tav."סכום", 0) AS "תוים",
@@ -1117,6 +1118,7 @@ function save_or_fix_payments($rows) {
 
         $sumTav = isset($r["תווי_קניה_שח"]) ? floatval($r["תווי_קניה_שח"]) : 0;
         $betyitzhak = isset($r["בית_יצחק"]) ? floatval($r["בית_יצחק"]) : 0;
+        $betyitzhakPagi = isset($r["בית_יצחק_פאגי"]) ? floatval($r["בית_יצחק_פאגי"]) : 0;
         $gmach = isset($r["גמח_נר_ישראל"]) ? floatval($r["גמח_נר_ישראל"]) : 0;
         
         //$sumTav = $r["תווי_קניה_שח"];
@@ -1148,7 +1150,7 @@ function save_or_fix_payments($rows) {
     $maanak = 0;
 
         //$other_pay = $afterMaaser - $isra;
-        $other_pay = $afterMaaser - $isra-$betyitzhak-$gmach;
+        $other_pay = $afterMaaser - $isra-$betyitzhak-$gmach-$betyitzhakPagi;
 
    if ($is_fix) {
        
@@ -1214,7 +1216,7 @@ $res_check = queryasrow($sql_check, [$avrech_id, $fix_for_month, $fix_for_year, 
     $afterMaaser=maaser($r["avrech_id"],$kolel_sum);    
 
     $isra += $maanak;
-    $other_pay = $afterMaaser - $isra-$sumTav-$betyitzhak-$gmach;
+    $other_pay = $afterMaaser - $isra-$sumTav-$betyitzhak-$gmach-$betyitzhakPagi;
 
     $sql = <<<SQL
         INSERT INTO "תשלומים" (avrech_id, "חודש", "שנה", "סכום_תיקונים", "סכום_כולל", "ישראשראי", "תשלום_אחר", "סכום_אחר_מעשר")
@@ -1286,6 +1288,12 @@ $other_pay-=$half;
         $extra_update .= ", בית_יצחק = \$$param_index";
         $params[] = $betyitzhak;
         $param_index++;
+        if (!is_null($betyitzhakPagi)) {
+            $extra_fields .= ', בית_יצחק_פאגי';
+            $extra_vals .= ", \$$param_index";
+            $extra_update .= ", בית_יצחק_פאגי = \$$param_index";
+            $params[] = $betyitzhakPagi;
+            $param_index++;
     }if (!is_null($gmach)) {
         $extra_fields .= ', גמח_נר_ישראל';
         $extra_vals .= ", \$$param_index";
@@ -1313,7 +1321,7 @@ doq($sql, $params);
 
 return ["success" => true];
 }
-
+}
 
 
 /*function save_or_fix_payments($rows) {
@@ -1629,7 +1637,7 @@ function update_deposits_from_payments($p) {
 
     // שליפת כל התשלומים עבור החודש והשנה
     $payments = queryasarray("
-        SELECT avrech_id, תשלום_אחר, בית_יצחק, גמח_נר_ישראל
+        SELECT avrech_id, תשלום_אחר,בית_יצחק_פאגי ,בית_יצחק, גמח_נר_ישראל
         FROM תשלומים
         WHERE חודש = $1 AND שנה = $2
     ", [$month, $year]);
@@ -1638,6 +1646,8 @@ function update_deposits_from_payments($p) {
         $avrech_id = $pmt["avrech_id"];
         $sumNY = ($pmt["תשלום_אחר"] ?? 0);
         $sumBY = ($pmt["בית_יצחק"] ?? 0);
+        $sumBYP = ($pmt["בית_יצחק_פאגי"] ?? 0);
+
         $sumGNY = ($pmt["גמח_נר_ישראל"] ?? 0);
         var_dump($sumNY, $sumBY, $sumGNY);
 
@@ -1648,17 +1658,19 @@ function update_deposits_from_payments($p) {
             doq("UPDATE פעימות SET 
                 sum_ner_yisrael=$1, hefresh_ner_yisrael=$1,
                 sum_beit_yitzchak=$2, hefresh_beit_yitzchak=$2,
-                sum_gmach_ner_yisrael=$3, hefresh_gmach_ner_yisrael=$3
-                WHERE avrech_id=$4",
-                [$sumNY, $sumBY, $sumGNY, $avrech_id]);
+                sum_gmach_ner_yisrael=$3, hefresh_gmach_ner_yisrael=$3,
+                sum_beit_yitzchak_pagi=$4, hefresh_beit_yitzchak_pagi=$4
+                WHERE avrech_id=$5",
+                [$sumNY, $sumBY, $sumGNY,$sumBYP, $avrech_id]);
         } else {
             // הכנסת שורה חדשה עם כל המקורות
             doq("INSERT INTO פעימות 
                 (avrech_id, sum_ner_yisrael, hefresh_ner_yisrael,
                  sum_beit_yitzchak, hefresh_beit_yitzchak,
-                 sum_gmach_ner_yisrael, hefresh_gmach_ner_yisrael)
-                VALUES ($1,$2,$3,$4,$5,$6,$7)",
-                [$avrech_id, $sumNY, $sumNY, $sumBY, $sumBY, $sumGNY, $sumGNY]);
+                 sum_gmach_ner_yisrael, hefresh_gmach_ner_yisrael,
+                 sum_beit_yitzchak_pagi, hefresh_beit_yitzchak_pagi)
+                VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)",
+                [$avrech_id, $sumNY, $sumNY, $sumBY, $sumBY, $sumGNY, $sumGNY, $sumBYP, $sumBYP]);
         }
     }
 
@@ -1709,7 +1721,7 @@ function other_deposit($p) {
 
     // שליפת הסכומים המעודכנים מהתשלומים
     $payments = queryasarray("
-        SELECT avrech_id, תשלום_אחר, בית_יצחק, גמח_נר_ישראל
+        SELECT avrech_id, תשלום_אחר,בית_יצחק_פאגי, בית_יצחק, גמח_נר_ישראל
         FROM תשלומים
         WHERE חודש = $1 AND שנה = $2
     ", [$month, $year]);
@@ -1718,6 +1730,8 @@ function other_deposit($p) {
         $avrech_id = $pmt["avrech_id"];
         $newNY = ($pmt["תשלום_אחר"] ?? 0);
         $newBY = ($pmt["בית_יצחק"] ?? 0);
+        $newBYP = ($pmt["בית_יצחק_פאגי"] ?? 0);
+
         $newGNY = ($pmt["גמח_נר_ישראל"] ?? 0);
 
         $existing = queryasrow("SELECT * FROM פעימות WHERE avrech_id=$1", [$avrech_id]);
@@ -1726,15 +1740,18 @@ function other_deposit($p) {
             // מחשבים הפרשים מול הסכומים הקודמים
             $hefreshNY = $newNY - floatval($existing["sum_ner_yisrael"]);
             $hefreshBY = $newBY - floatval($existing["sum_beit_yitzchak"]);
+            $hefreshBYP = $newBYP - floatval($existing["sum_beit_yitzchak_pagi"]);
+
             $hefreshGNY = $newGNY - floatval($existing["sum_gmach_ner_yisrael"]);
 
             // עדכון הטבלה
             doq("UPDATE פעימות SET 
                 sum_ner_yisrael=$1, hefresh_ner_yisrael=$2,
                 sum_beit_yitzchak=$3, hefresh_beit_yitzchak=$4,
-                sum_gmach_ner_yisrael=$5, hefresh_gmach_ner_yisrael=$6
-                WHERE avrech_id=$7",
-                [$newNY, $hefreshNY, $newBY, $hefreshBY, $newGNY, $hefreshGNY, $avrech_id]);
+                sum_gmach_ner_yisrael=$5, hefresh_gmach_ner_yisrael=$6,
+                sum_beit_yitzchak_pagi=$7, hefresh_beit_yitzchak_pagi=$8
+                WHERE avrech_id=$9",
+                [$newNY, $hefreshNY, $newBY, $hefreshBY, $newGNY, $hefreshGNY,$newBYP,$hefreshBYP, $avrech_id]);
         }
     }
 
@@ -1937,7 +1954,6 @@ foreach ($rows as $r) {
     echo json_encode(["success" => true, "message" => "נוצרו נתוני מלגה בהצלחה"]);
     exit;
 }
-
 /*function createMilga($p) {
     $month = $p["חודש"] ?? null;
     $year = $p["שנה"] ?? null;
@@ -2114,7 +2130,7 @@ function applyGeneralDepositToTashlumim($p) {
         return ["success" => false, "error" => "חסרים נתונים (חודש/שנה/מקור/סכום)"];
     }
 
-    if (!in_array($source, ["בית_יצחק", "גמח_נר_ישראל"])) {
+    if (!in_array($source, ["בית_יצחק", "גמח_נר_ישראל", "בית_יצחק_פאגי"])) {
         return ["success" => false, "error" => "מקור לא תקין"];
     }
 

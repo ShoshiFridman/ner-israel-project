@@ -159,6 +159,14 @@ $sources = [
         'institution_name' => 'בית יצחק',
         'transaction_type' => '701'
     ],
+    'beit_yitzchak_pagi' => [
+        'db_field' => 'hefresh_beit_yitzchak_pagi',
+        'prefix' => 'beit_yitzchak_pagi',
+        'institution_code' => '71504014',
+        'sending_institution' => '71504',
+        'institution_name' => 'בית יצחק פאגי',
+        'transaction_type' => '701'
+    ],
     'gmach_ner_yisrael' => [
         'db_field' => 'hefresh_gmach_ner_yisrael',
         'prefix' => 'gmach_ner_yisrael',
@@ -362,14 +370,13 @@ function create_masav($month, $year) {
 
     $rows = queryasarray("
         SELECT p.avrech_id, a.חשבון, a.סניף, a.בנק, a.פרטי, a.משפחה, a.תז,
-               p.hefresh_ner_yisrael, p.hefresh_beit_yitzchak, p.hefresh_gmach_ner_yisrael
+               p.hefresh_ner_yisrael, p.hefresh_beit_yitzchak, p.hefresh_gmach_ner_yisrael, p.hefresh_beit_yitzchak_pagi
         FROM פעימות p
         JOIN אברכים a ON p.avrech_id = a.אברך_id
     ");
 
-    $today_date = date("ymd");   // YYMMDD
-    $today_file = date("Ymd");   // YYYYMMDD לשם הקובץ
-
+    $today_date = date("ymd");   
+    $today_file = date("Ymd");   
     $files = [];
     $totals = [];
     $counts = [];
@@ -396,9 +403,7 @@ function create_masav($month, $year) {
             $files[$field] = fopen($filename, "wb");
             $totals[$field] = 0;
             $counts[$field] = 0;
-// בתחילת הפונקציה, אחרי $files = [];
-$debug_txt_file = fopen("beit_itzchak_debug.txt", "w");
-            // שורת כותרת K – בדיוק 128 תווים
+
             $header = 'K';
             $header .= str_pad($info['institution_code'],8,'0',STR_PAD_LEFT);
             $header .= '00';
@@ -425,6 +430,8 @@ $debug_txt_file = fopen("beit_itzchak_debug.txt", "w");
             if(!isset($files[$field])) continue;
 
             $value = isset($r[$info['db_field']]) ? floatval($r[$info['db_field']]) : 0;
+            error_log("מהDB: " . $value);
+
             if($value > 0){
                 $line = '1';
                 $line .= str_pad($info['institution_code'],8,'0',STR_PAD_LEFT);
@@ -437,23 +444,33 @@ $debug_txt_file = fopen("beit_itzchak_debug.txt", "w");
                 $line .= '0';
                 $line .= str_pad($r['תז'] ?? '',9,'0',STR_PAD_LEFT);
 
-                // שם עברי – חיתוך והיפוך, בדיוק 16 תווים
                 $full_name = trim(($r['משפחה'] ?? '') . ' ' . ($r['פרטי'] ?? ''));
-                $full_name_cut = mb_substr($full_name, 0, 15, "UTF-8");
+                /*$full_name_cut = mb_substr($full_name, 0, 15, "UTF-8");
                 $full_name_reversed = mb_strrev($full_name_cut);
                 $full_name_padded = str_pad($full_name_reversed, 16, ' ', STR_PAD_RIGHT);
-                $line .= iconv("UTF-8", "CP862//IGNORE", $full_name_padded);
-               /* $full_name = trim(($r['משפחה'] ?? '') . ' ' . ($r['פרטי'] ?? ''));
-                $full_name_cut = mb_substr($full_name, 0, 16, "UTF-8"); 
-                $full_name_padded = str_pad($full_name_cut, 16, ' ', STR_PAD_RIGHT);
                 $line .= iconv("UTF-8", "CP862//IGNORE", $full_name_padded);*/
+               
+                $full_name_cut = mb_substr($full_name, 0, 16, "UTF-8");
+                $full_name_padded = str_pad($full_name_cut, 16, ' ', STR_PAD_RIGHT);
+                $line .= iconv("UTF-8", "CP862//IGNORE", $full_name_padded);
+
+               
+               /* $amount = intval(round($value * 100));
+
+                error_log("למסב (אגורות): " . $amount);
+                $line .= str_pad($amount, 13, '0', STR_PAD_LEFT);*/
+                $value = preg_replace('/[^0-9.]/', '', $value);
+                error_log("DEBUG: avrech_id={$r['avrech_id']}, value={$value}");
+
+                // המרה ל-float
+                $value = floatval($value);
                 
-                // סכום – חיתוך במקום עיגול
-                //$amount = floor($value*100);
-                $amount = intval(round($value * 100));
+                // תמיד המרה לאגורות
+                $amount = intval(round($value));
+                error_log("avrech_id={$r['avrech_id']} amount={$amount}");
 
-                $line .= str_pad($amount,13,'0',STR_PAD_LEFT);
 
+                $line .= str_pad($amount, 13, '0', STR_PAD_LEFT);
                 // מספר אברך
                 $line .= str_pad($r['avrech_id'] ?? '',20,'0',STR_PAD_LEFT);
 
@@ -465,13 +482,6 @@ $debug_txt_file = fopen("beit_itzchak_debug.txt", "w");
                 $line .= str_repeat(' ',2);
 
                 $line .= "\r\n";
-// כתיבה לקובץ קריא (רק לבית יצחק)
-if ($info['prefix'] === 'beit_yitzchak') {
-    $full_name = trim(($r['משפחה'] ?? '') . ' ' . ($r['פרטי'] ?? ''));
-    $amount = intval($value);
-    $debug_line = "אברך {$r['avrech_id']} | שם: {$full_name} | בנק: {$r['בנק']} | סניף: {$r['סניף']} | חשבון: {$r['חשבון']} | ת.ז: {$r['תז']} | סכום: {$amount}\n";
-    fwrite($debug_txt_file, $debug_line);
-}
 
                fwrite($files[$field], $line);
                //fwrite($files[$field], iconv("UTF-8", "CP862//IGNORE", $line));
@@ -524,7 +534,8 @@ if ($info['prefix'] === 'beit_yitzchak') {
         fclose($fh);
 
     }
-    fclose($debug_txt_file);
+    
+
 
 }
 

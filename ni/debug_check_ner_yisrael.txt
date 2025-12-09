@@ -1,0 +1,313 @@
+avrech_id=294 | name=קריצלר ישראל | DB value=1700 | amount=1700
+avrech_id=287 | name=קלרמן ישי | DB value=1700 | amount=1700
+avrech_id=325 | name=שמואלי יהושע | DB value=1600 | amount=1600
+avrech_id=70 | name=גליס עקיבא | DB value=1800 | amount=1800
+avrech_id=1583 | name=סיאני ינון | DB value=1210 | amount=1210
+avrech_id=47 | name=בן שימול יעקב | DB value=1800 | amount=1800
+avrech_id=1517 | name=עקיבא דוד | DB value=1300 | amount=1300
+avrech_id=1476 | name=אלוש יחיאל | DB value=1700 | amount=1700
+avrech_id=148 | name=טל משה | DB value=1570 | amount=1570
+avrech_id=1500 | name=אפשטיין שלמה | DB value=1700 | amount=1700
+avrech_id=286 | name=קלנטרי חיים יהודה | DB value=1500 | amount=1500
+avrech_id=170 | name=כהן רועי | DB value=1300 | amount=1300
+avrech_id=23 | name=אניס מתתיהו | DB value=680 | amount=680
+avrech_id=132 | name=ז''ק יואב | DB value=1800 | amount=1800
+avrech_id=1598 | name=הורוביץ אלכסנדר סנדר | DB value=1210 | amount=1210
+avrech_id=38 | name=ביטון דוד | DB value=1390 | amount=1390
+avrech_id=149 | name=טרבלסי עמיר | DB value=1700 | amount=1700
+avrech_id=181 | name=ליברמן דוד | DB value=1180 | amount=1180
+avrech_id=196 | name=מולדובן נפתלי הרץ | DB value=1300 | amount=1300
+avrech_id=86 | name=דיויד צבי | DB value=1300 | amount=1300
+avrech_id=175 | name=לוז אברהם | DB value=1300 | amount=1300
+avrech_id=1387 | name=סיאני אליאב | DB value=1500 | amount=1500
+avrech_id=270 | name=קהן רפאל | DB value=1180 | amount=1180
+avrech_id=118 | name=וכסלר אברהם ישעיה | DB value=1700 | amount=1700
+avrech_id=219 | name=נחום נתנאל | DB value=1800 | amount=1800
+avrech_id=336 | name=בורובסקי יהודה לייב | DB value=620 | amount=620
+avrech_id=26 | name=ארזי משה | DB value=1012 | amount=1012
+avrech_id=31 | name=בוזו אלחנן | DB value=1500 | amount=1500
+avrech_id=1395 | name=לוי נריה | DB value=1160 | amount=1160
+avrech_id=1230 | name=אליקים יהודה | DB value=1500 | amount=1500
+avrech_id=885 | name=זקס אריה | DB value=1300 | amount=1300
+avrech_id=1593 | name=כהן דור | DB value=1450 | amount=1450
+avrech_id=1566 | name=מנצור אוראל | DB value=1100 | amount=1100
+avrech_id=178 | name=לוי שמעון | DB value=1800 | amount=1800
+avrech_id=262 | name=קאהן אהרון ירון | DB value=1180 | amount=1180
+avrech_id=255 | name=פרייזלר אריה | DB value=1300 | amount=1300
+avrech_id=51 | name=בר-אל שמשון | DB value=1400 | amount=1400
+avrech_id=304 | name=ריזקין אבישי | DB value=1700 | amount=1700
+avrech_id=194 | name=מדר ישראל | DB value=1180 | amount=1180
+avrech_id=397 | name=סייבי דוד | DB value=1000 | amount=1000
+avrech_id=1548 | name=לוי עידו | DB value=1700 | amount=1700
+avrech_id=404 | name=פרויליך יצחק זאב | DB value=1700 | amount=1700
+avrech_id=928 | name=הורוויץ עקיבא בנימין | DB value=1800 | amount=1800
+avrech_id=32 | name=בוכבינדר הלל אליהו | DB value=1480 | amount=1480
+avrech_id=1599 | name=אוטמזגין איליי יוסף | DB value=1300 | amount=1300
+avrech_id=317 | name=שטרן ישראל | DB value=1550 | amount=1550
+avrech_id=1591 | name=סטרלצוב יוסף צבי | DB value=780 | amount=780
+avrech_id=327 | name=שער ישעיהו | DB value=1800 | amount=1800
+avrech_id=217 | name=משען יעקב | DB value=1700 | amount=1700
+avrech_id=908 | name=מלאכי מיכאל | DB value=1800 | amount=1800
+avrech_id=253 | name=פרידמן יוסף | DB value=1800 | amount=1800
+avrech_id=256 | name=פרנבך משה | DB value=1180 | amount=1180
+avrech_id=241 | name=פדלון אריאל | DB value=1400 | amount=1400
+avrech_id=11 | name=איטח דוד | DB value=1700 | amount=1700
+avrech_id=1459 | name=גליק ישראל | DB value=742 | amount=742
+avrech_id=236 | name=עוזרי דוד סיני | DB value=1700 | amount=1700
+avrech_id=228 | name=סינברגר עז עקיבא | DB value=1400 | amount=1400
+avrech_id=212 | name=מן מנחם | DB value=1500 | amount=1500
+avrech_id=1526 | name=בלוך יששכר דב | DB value=1210 | amount=1210
+avrech_id=1543 | name=אביראש מיכאל | DB value=1500 | amount=1500
+avrech_id=54 | name=ברוש נתנאל | DB value=1180 | amount=1180
+avrech_id=1586 | name=ישראל מלאכי נחום | DB value=1300 | amount=1300
+avrech_id=1462 | name=גבאי יצחק | DB value=1450 | amount=1450
+avrech_id=1515 | name=כהן נתן | DB value=1400 | amount=1400
+avrech_id=10 | name=אטיה יונתן אלחנן | DB value=1200 | amount=1200
+avrech_id=89 | name=דינר מרדכי | DB value=1400 | amount=1400
+avrech_id=202 | name=מזוז שמואל | DB value=900 | amount=900
+avrech_id=1297 | name=סבו יעקב | DB value=1500 | amount=1500
+avrech_id=1559 | name=זכריה שמואל מאיר | DB value=820 | amount=820
+avrech_id=1549 | name=מדמוני יוסף | DB value=1650 | amount=1650
+avrech_id=280 | name=קימחין אברהם | DB value=1080 | amount=1080
+avrech_id=1473 | name=אולשטיין אברהם | DB value=1300 | amount=1300
+avrech_id=1529 | name=אוחיון דן | DB value=1300 | amount=1300
+avrech_id=1592 | name=קול שלמה זלמן | DB value=1700 | amount=1700
+avrech_id=1398 | name=גרשי אליאור אברהם | DB value=1300 | amount=1300
+avrech_id=1443 | name=נהוראי יצחק אלחנן | DB value=1590 | amount=1590
+avrech_id=1572 | name=מקסימוב צוריאל | DB value=1500 | amount=1500
+avrech_id=1600 | name=יצחקי חנוך | DB value=1800 | amount=1800
+avrech_id=107 | name=וייס שרגא פייבל | DB value=1570 | amount=1570
+avrech_id=239 | name=פאקר אליעזר | DB value=1500 | amount=1500
+avrech_id=192 | name=מאייר מנחם | DB value=1570 | amount=1570
+avrech_id=363 | name=בלסן עזרא | DB value=1180 | amount=1180
+avrech_id=1556 | name=אוחיון מתן | DB value=910 | amount=910
+avrech_id=97 | name=הראש שלמה | DB value=620 | amount=620
+avrech_id=1550 | name=נחמיה אביעד | DB value=1400 | amount=1400
+avrech_id=237 | name=עטיה מאיר | DB value=1685 | amount=1685
+avrech_id=190 | name=לפאיר ישראל מאיר | DB value=1500 | amount=1500
+avrech_id=1452 | name=סויסה חננאל דוד | DB value=1400 | amount=1400
+avrech_id=1588 | name=בן נון אברהם | DB value=1520 | amount=1520
+avrech_id=1505 | name=הרשברג ברוך גד | DB value=1300 | amount=1300
+avrech_id=224 | name=סטמקר ישעיהו | DB value=1390 | amount=1390
+avrech_id=116 | name=ויספיש ארי | DB value=1000 | amount=1000
+avrech_id=1546 | name=זילברמן אריה לייב | DB value=1480 | amount=1480
+avrech_id=1306 | name=אוחיון ברוך | DB value=1300 | amount=1300
+avrech_id=36 | name=בטיטו יעקב ישראל | DB value=1570 | amount=1570
+avrech_id=1393 | name=ברדוגו שמואל | DB value=242 | amount=242
+avrech_id=1484 | name=איזנשטיין יעקב | DB value=1115 | amount=1115
+avrech_id=425 | name=מורלי יהודה | DB value=1000 | amount=1000
+avrech_id=39 | name=בלויגרונד אריה ליב | DB value=1400 | amount=1400
+avrech_id=1501 | name=יקותיאל אהרן | DB value=1180 | amount=1180
+avrech_id=1450 | name=נמני ישראל מאיר | DB value=1300 | amount=1300
+avrech_id=1594 | name=בירמן אלחנן מאיר | DB value=796 | amount=796
+avrech_id=1467 | name=אליאך גרשון | DB value=980 | amount=980
+avrech_id=33 | name=בורה יהודה | DB value=1210 | amount=1210
+avrech_id=1537 | name=קורלנסקי יעקב | DB value=1300 | amount=1300
+avrech_id=221 | name=נקי נתנאל ישעיה | DB value=1980 | amount=1980
+avrech_id=142 | name=חכם דוד מיכאל | DB value=1150 | amount=1150
+avrech_id=141 | name=חכם דוד אליהו | DB value=1700 | amount=1700
+avrech_id=1580 | name=חלבי ישראל | DB value=1710 | amount=1710
+avrech_id=1441 | name=בוטובול משה חיים | DB value=1320 | amount=1320
+avrech_id=1551 | name=עסיס שלמה אליהו | DB value=910 | amount=910
+avrech_id=220 | name=נידם יוסף נחמן | DB value=1000 | amount=1000
+avrech_id=275 | name=קופרשטיין נחמן בנימין | DB value=995 | amount=995
+avrech_id=1465 | name=מימוני ראובן | DB value=1390 | amount=1390
+avrech_id=1581 | name=בלוי בצלאל | DB value=1570 | amount=1570
+avrech_id=403 | name=בראון שמואל | DB value=880 | amount=880
+avrech_id=1367 | name=המאירי יצחק יעקב | DB value=1590 | amount=1590
+avrech_id=1483 | name=אברהמי נתן צבי | DB value=1410 | amount=1410
+avrech_id=198 | name=מורלי אפרים | DB value=1390 | amount=1390
+avrech_id=1560 | name=טרבלסי נדב | DB value=1300 | amount=1300
+avrech_id=156 | name=יוספוב יעקב | DB value=1500 | amount=1500
+avrech_id=1447 | name=קינן יעקב | DB value=1200 | amount=1200
+avrech_id=230 | name=סלומי אלעזר | DB value=880 | amount=880
+avrech_id=259 | name=ציזלינג בן ציון אריה | DB value=1106.5 | amount=1107
+avrech_id=1390 | name=יצחקי ישראל מאיר | DB value=1570 | amount=1570
+avrech_id=446 | name=פיונטק יעקב | DB value=1000 | amount=1000
+avrech_id=1504 | name=בבייב חיים שאול | DB value=1500 | amount=1500
+avrech_id=416 | name=מונסונייגו דוד | DB value=1600 | amount=1600
+avrech_id=1513 | name=רפאלי תומר | DB value=1400 | amount=1400
+avrech_id=205 | name=מחבוב רפאל שלום | DB value=1210 | amount=1210
+avrech_id=225 | name=סטרול אברהם | DB value=1210 | amount=1210
+avrech_id=1475 | name=יעל יעקב | DB value=1570 | amount=1570
+avrech_id=1532 | name=עמאר אלעזר מנחם | DB value=875 | amount=875
+avrech_id=1579 | name=דייטש אברהם | DB value=1800 | amount=1800
+avrech_id=139 | name=חזן ישראל | DB value=1300 | amount=1300
+avrech_id=1596 | name=בלוי יוסף צבי | DB value=1120 | amount=1120
+avrech_id=1585 | name=מרקוס יוסף יהודה לייב | DB value=1300 | amount=1300
+avrech_id=1590 | name=רוזנבאום יצחק | DB value=1570 | amount=1570
+avrech_id=1461 | name=אלפר בנימין | DB value=1210 | amount=1210
+avrech_id=1487 | name=רייכין חן | DB value=1570 | amount=1570
+avrech_id=1495 | name=כהן טוויל יצחק אריה | DB value=1570 | amount=1570
+avrech_id=35 | name=בוש נסים רפאל | DB value=1480 | amount=1480
+avrech_id=131 | name=זמל אהרון | DB value=1070 | amount=1070
+avrech_id=1552 | name=פור אליעד ישראל | DB value=1800 | amount=1800
+avrech_id=263 | name=קאהן אורי שרגא | DB value=1570 | amount=1570
+avrech_id=366 | name=נדב שלמה מנחם | DB value=1300 | amount=1300
+avrech_id=1554 | name=רוזנברג יהודה לייב | DB value=1300 | amount=1300
+avrech_id=1308 | name=יעקובסון יהודה | DB value=2200 | amount=2200
+avrech_id=444 | name=יפרח דניאל | DB value=1180 | amount=1180
+avrech_id=1310 | name=גברא אסף | DB value=1600 | amount=1600
+avrech_id=1381 | name=חיימוב אריאל | DB value=1300 | amount=1300
+avrech_id=1587 | name=צביון אברהם ישעיהו | DB value=1570 | amount=1570
+avrech_id=1485 | name=אלדד יעקב ישראל | DB value=1480 | amount=1480
+avrech_id=1479 | name=יעקובוביץ אהרן | DB value=1185 | amount=1185
+avrech_id=1396 | name=גמליאל אליה | DB value=1500 | amount=1500
+avrech_id=1466 | name=אברהם יהודה | DB value=1120 | amount=1120
+avrech_id=1506 | name=בן שיטרית דוד עדיאל | DB value=850 | amount=850
+avrech_id=1400 | name=קולר אפרים צבי | DB value=1600 | amount=1600
+avrech_id=227 | name=סימן טוב אריאל שמעון | DB value=1800 | amount=1800
+avrech_id=300 | name=רוזנטל ישי | DB value=1200 | amount=1200
+avrech_id=1457 | name=ולדנברג משה אליהו | DB value=940 | amount=940
+avrech_id=278 | name=קוקבקה יחיאל | DB value=1210 | amount=1210
+avrech_id=324 | name=שמואלביץ חיים לייב | DB value=1300 | amount=1300
+avrech_id=265 | name=קבנובסקי אברהם משה | DB value=1390 | amount=1390
+avrech_id=285 | name=קלימי נתנאל אברהם | DB value=1012 | amount=1012
+avrech_id=160 | name=כהן אוריאל | DB value=800 | amount=800
+avrech_id=1480 | name=יעקבזון טוביה | DB value=1600 | amount=1600
+avrech_id=1519 | name=הובר יהודה | DB value=1480 | amount=1480
+avrech_id=172 | name=כץ ישראל זאב | DB value=1370 | amount=1370
+avrech_id=1539 | name=יעקובוביץ מרדכי | DB value=1210 | amount=1210
+avrech_id=91 | name=האוזר אליאב | DB value=1570 | amount=1570
+avrech_id=179 | name=לויברג בנימין | DB value=1400 | amount=1400
+avrech_id=19 | name=אמינוב אוריאל | DB value=1800 | amount=1800
+avrech_id=297 | name=רדזימינסקי אהרון | DB value=1180 | amount=1180
+avrech_id=211 | name=ממליא גד | DB value=1039 | amount=1039
+avrech_id=150 | name=טרופר יואל | DB value=1700 | amount=1700
+avrech_id=1564 | name=ליאני אליהו שלמה | DB value=742 | amount=742
+avrech_id=176 | name=לוז פנחס דוד | DB value=1390 | amount=1390
+avrech_id=206 | name=מלאכי יוסף | DB value=1305 | amount=1305
+avrech_id=1384 | name=דוד משה | DB value=1800 | amount=1800
+avrech_id=1565 | name=אנגל אליהו | DB value=1400 | amount=1400
+avrech_id=266 | name=קדוש אוריאל | DB value=425 | amount=425
+avrech_id=1231 | name=דרור גבריאל | DB value=1800 | amount=1800
+avrech_id=1307 | name=קלימי יהודה משה | DB value=1500 | amount=1500
+avrech_id=1370 | name=זרקא ישראל | DB value=1400 | amount=1400
+avrech_id=290 | name=קסטנר חיים | DB value=1300 | amount=1300
+avrech_id=1582 | name=ידידיה יוסף | DB value=1380 | amount=1380
+avrech_id=1434 | name=מחפוד נתנאל | DB value=800 | amount=800
+avrech_id=1527 | name=זקס יונתן | DB value=1300 | amount=1300
+avrech_id=357 | name=בוגנים ראובן | DB value=1000 | amount=1000
+avrech_id=273 | name=קופפר עידו | DB value=1600 | amount=1600
+avrech_id=1561 | name=יפרגן ישראל מאיר | DB value=1050 | amount=1050
+avrech_id=1595 | name=פרידמן שלמה | DB value=1300 | amount=1300
+avrech_id=1375 | name=בניטון דניאל | DB value=1300 | amount=1300
+avrech_id=267 | name=קדוש ישראל | DB value=1200 | amount=1200
+avrech_id=1439 | name=גרנג'ווד רפאל דב | DB value=1300 | amount=1300
+avrech_id=1573 | name=שרעבי יצחק | DB value=1570 | amount=1570
+avrech_id=1364 | name=צברי יעקב חיים | DB value=1012 | amount=1012
+avrech_id=306 | name=רייך מרדכי | DB value=1300 | amount=1300
+avrech_id=323 | name=שלנגר אברהם | DB value=1285 | amount=1285
+avrech_id=13 | name=אייזן שלמה זלמן | DB value=1480 | amount=1480
+avrech_id=1589 | name=לוין שלמה זלמן | DB value=1980 | amount=1980
+avrech_id=184 | name=ליכט דוד | DB value=1012 | amount=1012
+avrech_id=169 | name=כהן מתן | DB value=1400 | amount=1400
+avrech_id=1468 | name=שטרן יוסף | DB value=893 | amount=893
+avrech_id=1510 | name=רייכינשטיין משה | DB value=1500 | amount=1500
+avrech_id=1563 | name=ארזי דוד | DB value=1210 | amount=1210
+avrech_id=1568 | name=נחמו כהן אהרן | DB value=1012 | amount=1012
+avrech_id=1542 | name=פרידלס מרדכי אריה | DB value=1570 | amount=1570
+avrech_id=1533 | name=פרץ אליהו | DB value=1480 | amount=1480
+avrech_id=128 | name=זכאי מאיר | DB value=1570 | amount=1570
+avrech_id=102 | name=ווייל יצחק מאיר | DB value=1800 | amount=1800
+avrech_id=1445 | name=הורוביץ אליעזר | DB value=1500 | amount=1500
+avrech_id=16 | name=אלישע ברוך נתנאל | DB value=1500 | amount=1500
+avrech_id=1531 | name=סלומי אהרון | DB value=1350 | amount=1350
+avrech_id=1455 | name=גרין אברהם | DB value=1570 | amount=1570
+avrech_id=1536 | name=גינצברג ישראל מאיר | DB value=1300 | amount=1300
+avrech_id=1553 | name=קופרמן שמואל | DB value=1800 | amount=1800
+avrech_id=1463 | name=וילמן דב | DB value=800 | amount=800
+avrech_id=187 | name=לנדי יוסף אברהם | DB value=1255 | amount=1255
+avrech_id=98 | name=הרשקוביץ נחום | DB value=1570 | amount=1570
+avrech_id=447 | name=מנדלזון חיים מנחם | DB value=1400 | amount=1400
+avrech_id=137 | name=חזן בצלאל | DB value=1100 | amount=1100
+avrech_id=94 | name=המאירי יוסף עמנואל | DB value=1400 | amount=1400
+avrech_id=87 | name=דיין יוסף חיים | DB value=1800 | amount=1800
+avrech_id=1597 | name=גוזלן דניאל | DB value=1500 | amount=1500
+avrech_id=409 | name=איזנשטיין חיים | DB value=1570 | amount=1570
+avrech_id=268 | name=קדושי ישראל מאיר | DB value=1390 | amount=1390
+avrech_id=1472 | name=דהן ישראל מאיר | DB value=1300 | amount=1300
+avrech_id=151 | name=יגיל דניאל | DB value=1200 | amount=1200
+avrech_id=1538 | name=פונפדר אלחנן | DB value=1150 | amount=1150
+avrech_id=155 | name=יוטקובסקי אריה | DB value=1700 | amount=1700
+avrech_id=193 | name=מגנוז יהודה | DB value=1685 | amount=1685
+avrech_id=103 | name=וולפסון אברהם | DB value=1480 | amount=1480
+avrech_id=215 | name=מרגלית ישראל | DB value=940 | amount=940
+avrech_id=303 | name=רויטמן נתן | DB value=1685 | amount=1685
+avrech_id=1444 | name=כהן אליה דוד | DB value=1100 | amount=1100
+avrech_id=180 | name=לוינגר צבי | DB value=2070 | amount=2070
+avrech_id=283 | name=קליינברד דוד | DB value=1570 | amount=1570
+avrech_id=418 | name=כהן אליה | DB value=1500 | amount=1500
+avrech_id=195 | name=מולדובן יצחק אליעזר | DB value=844 | amount=844
+avrech_id=114 | name=ויסנשטרן שמעון | DB value=1570 | amount=1570
+avrech_id=1385 | name=דמרי נתנאל | DB value=1650 | amount=1650
+avrech_id=1540 | name=סלע מאיר | DB value=1480 | amount=1480
+avrech_id=1544 | name=וינבך מיכל דוד | DB value=1030 | amount=1030
+avrech_id=355 | name=רוטנמר יונתן | DB value=1180 | amount=1180
+avrech_id=1508 | name=נידם שמעון | DB value=1120 | amount=1120
+avrech_id=1165 | name=אוחנה יהודה | DB value=1400 | amount=1400
+avrech_id=288 | name=קמינר שלמה | DB value=1120 | amount=1120
+avrech_id=1569 | name=טחלוב דוד | DB value=1300 | amount=1300
+avrech_id=1530 | name=חדד נתן הלל חי משה | DB value=742 | amount=742
+avrech_id=1557 | name=אוחנה טל ישראל | DB value=1300 | amount=1300
+avrech_id=92 | name=הכטמן מאיר שמחה | DB value=1570 | amount=1570
+avrech_id=93 | name=הכסטר יעקב | DB value=1096 | amount=1096
+avrech_id=104 | name=וורונין חיים | DB value=1700 | amount=1700
+avrech_id=1547 | name=זילברמן יהושע | DB value=1570 | amount=1570
+avrech_id=1571 | name=מלר ברוך | DB value=1500 | amount=1500
+avrech_id=1534 | name=בובר שלמה | DB value=1570 | amount=1570
+avrech_id=1514 | name=קרושינסקי יוסף שלום | DB value=1385 | amount=1385
+avrech_id=386 | name=ישורון ינון יצחק | DB value=1380 | amount=1380
+avrech_id=1518 | name=אינהורן אלעזר מנחם מן | DB value=800 | amount=800
+avrech_id=1525 | name=ושדי יאיר | DB value=1500 | amount=1500
+avrech_id=400 | name=בן דוד מרדכי | DB value=1800 | amount=1800
+avrech_id=1348 | name=בנדיקט משה בנימין | DB value=1120 | amount=1120
+avrech_id=1289 | name=הופמן מרדכי | DB value=1500 | amount=1500
+avrech_id=127 | name=זילברברג אהרן | DB value=1550 | amount=1550
+avrech_id=1311 | name=ג'יקובס אהרון | DB value=1800 | amount=1800
+avrech_id=1464 | name=שניידר משה עזריאל | DB value=1300 | amount=1300
+avrech_id=250 | name=פראנק יוסף | DB value=1370 | amount=1370
+avrech_id=210 | name=מלמד אברהם חי | DB value=1180 | amount=1180
+avrech_id=100 | name=ואקנין ישראל מאיר | DB value=2070 | amount=2070
+avrech_id=30 | name=בוגץ' נחום | DB value=1700 | amount=1700
+avrech_id=1577 | name=זייבאלד יעקב | DB value=1750 | amount=1750
+avrech_id=121 | name=וסרמן יהודה | DB value=1390 | amount=1390
+avrech_id=1314 | name=גוטליב יהודה | DB value=1180 | amount=1180
+avrech_id=1470 | name=סלומי שלום | DB value=1290 | amount=1290
+avrech_id=1397 | name=בן יצחק יקיר | DB value=1120 | amount=1120
+avrech_id=1488 | name=משה אלעזר מנחם | DB value=1570 | amount=1570
+avrech_id=1477 | name=גרנג'ווד אלחנן | DB value=1012 | amount=1012
+avrech_id=1496 | name=מדן מאיר | DB value=1570 | amount=1570
+avrech_id=158 | name=יצחקי רפאל | DB value=1070 | amount=1070
+avrech_id=81 | name=דדון נתנאל חיים | DB value=1480 | amount=1480
+avrech_id=1575 | name=חיון משה | DB value=1300 | amount=1300
+avrech_id=1494 | name=זריצקי דוד | DB value=670 | amount=670
+avrech_id=1567 | name=שניידר שלמה | DB value=940 | amount=940
+avrech_id=1232 | name=בנימין יקיר ישראל מאיר | DB value=1500 | amount=1500
+avrech_id=1502 | name=סבג שלום אהרן | DB value=850 | amount=850
+avrech_id=423 | name=גולדברג אליהו | DB value=1800 | amount=1800
+avrech_id=428 | name=גנצרסקי אליהו | DB value=725 | amount=725
+avrech_id=1382 | name=חשייב בנימין | DB value=1500 | amount=1500
+avrech_id=456 | name=כהן דניאל | DB value=880 | amount=880
+avrech_id=41 | name=בלוקה יצחק | DB value=1390 | amount=1390
+avrech_id=1217 | name=גולדפרב יהודה | DB value=1500 | amount=1500
+avrech_id=449 | name=שטרית יוסף חיים | DB value=1300 | amount=1300
+avrech_id=1523 | name=קורקוס לוי יצחק | DB value=1300 | amount=1300
+avrech_id=49 | name=בעל צדקה מאיר | DB value=850 | amount=850
+avrech_id=62 | name=גולדברג יצחק אלחנן | DB value=1150 | amount=1150
+avrech_id=1372 | name=זיו אליהו | DB value=1210 | amount=1210
+avrech_id=74 | name=גרויסמרק יאיר | DB value=1550 | amount=1550
+avrech_id=157 | name=יעקבי אשי אברהם יצחק | DB value=1012 | amount=1012
+avrech_id=310 | name=שבתאי יוסף חיים | DB value=1096 | amount=1096
+avrech_id=1576 | name=לויליכט מאיר | DB value=1120 | amount=1120
+avrech_id=1493 | name=פאלאטשעק אברהם | DB value=1390 | amount=1390
+avrech_id=408 | name=שוקרון דוד | DB value=1800 | amount=1800
+avrech_id=117 | name=ויספיש מאיר | DB value=1062.4 | amount=1062
+avrech_id=296 | name=קרשינסקי ישראל מאיר | DB value=1570 | amount=1570
+avrech_id=1218 | name=בן עבו משה יאיר | DB value=1500 | amount=1500
+avrech_id=1522 | name=שטייער דוד | DB value=1435 | amount=1435
+avrech_id=25 | name=ארזי אברהם ישעיה | DB value=1685 | amount=1685
+avrech_id=1521 | name=ליפשיץ טוביה נתן יצחק | DB value=1230 | amount=1230
+avrech_id=1486 | name=יצחקי נחמיה | DB value=1300 | amount=1300
+avrech_id=391 | name=בן כליפה שמעון | DB value=1700 | amount=1700
+TOTAL amount for ner_yisrael: 423610
