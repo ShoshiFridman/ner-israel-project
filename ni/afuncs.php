@@ -247,22 +247,63 @@ function add_tarif($p) {
 
     return ['ok' => true];
 }
-function get_tarif_for_avrech_and_date($avrech_id, $greg_date) {
-    global $db;
-    $sql = <<<SQL
-        SELECT s.*
-        FROM "אברכים" a
-        JOIN "קבוצות" k ON a."קבוצה" = k."שם"
-        JOIN "תעריפים" s ON k."סניף_id" = s."קוד סניף"
-        WHERE a."אברך_id" = $1
-          AND (
-            (s."תאריך סיום" IS NULL AND $2 >= s."תאריך התחלה")
-            OR (s."תאריך סיום" IS NOT NULL AND $2 BETWEEN s."תאריך התחלה" AND s."תאריך סיום")
-          )
-        LIMIT 1
-    SQL;
+function get_tarif_for_avrech_and_date($avrech_id, $ldate) {
 
-    return queryasrow($sql, [$avrech_id, $greg_date]);
+    /* ==============================
+       שלב 1 — שליפת קבוצה של האברך
+       ============================== */
+
+    $avrech = queryasrow(
+        'SELECT "קבוצה"
+         FROM "אברכים"
+         WHERE "אברך_id" = $1',
+        [$avrech_id]
+    );
+
+    if (!$avrech || empty($avrech["קבוצה"])) {
+        error_log("לא נמצאה קבוצה לאברך $avrech_id");
+        return null;
+    }
+
+    /* ==============================
+       שלב 2 — קבלת סניף מהקבוצה
+       ============================== */
+
+    $group = queryasrow(
+        'SELECT "סניף_id"
+         FROM "קבוצות"
+         WHERE "שם" = $1',
+        [$avrech["קבוצה"]]
+    );
+
+    if (!$group || !$group["סניף_id"]) {
+        error_log("לא נמצא סניף לקבוצה " . $avrech["קבוצה"]);
+        return null;
+    }
+
+    $snif_id = $group["סניף_id"];
+
+    /* ==============================
+       שלב 3 — שליפת תעריף לפי תאריך
+       ============================== */
+
+    $tarif = queryasrow(
+        'SELECT *
+         FROM "תעריפים"
+         WHERE "קוד סניף" = $1
+           AND ("סטטוס" = \'פעיל\' OR "סטטוס" = \'כן\')
+           AND "תאריך התחלה" <= $2
+           AND ("תאריך סיום" IS NULL OR "תאריך סיום" >= $2)
+         ORDER BY "תאריך התחלה" DESC
+         LIMIT 1',
+        [$snif_id, $ldate]
+    );
+
+    if (!$tarif) {
+        error_log("לא נמצא תעריף לסניף $snif_id בתאריך $ldate");
+    }
+
+    return $tarif;
 }
 
 
@@ -593,10 +634,9 @@ function add_fix(array $p) {
             doq($sqlUpdate, [$avrech_id, $month, $year, $fieldInfo['value']]);
         }
     }
-    /*
     // קריאה לפונקציה לעדכון תשלומים
     //יירוקקקקקקקקקקקקקקקקקקקקקקקקקקקקקקקקקקק
-   apply_fix_and_update_payment([
+  /* apply_fix_and_update_payment([
         "avrech_id" => $avrech_id,
         "חודש" => $month,
         "שנה" => $year,
@@ -604,9 +644,18 @@ function add_fix(array $p) {
         "שנה_תיקון" => $fix_year,
         "תעריף_תוספת" => $tarifTosefet,
         "סכום_אחר_מעשר" => $p['סכום_אחר_מעשר'] ?? 0,
-        
-    ]); */
 
+    ]); 
+    */
+    apply_fix_and_update_payment([
+        "avrech_id" => $avrech_id,
+        "חודש" => $month,
+        "שנה" => $year,
+        "חודש_תיקון" => $fix_month ?? $month,
+        "שנה_תיקון" => $fix_year ?? $year,
+        "סוג_תיקון" => $p['סוג_תיקון']
+    ]);
+    
     return ['success' => true, 'id' => $id];
 }
 
@@ -652,92 +701,177 @@ function get_fix_totals($p) {
     }
     return ["payments" => $map];
 }
-/*function apply_fix_and_update_payment($p) {
+//נסיון=========================
+function get_tarif_for_date($avrech_id, $date) {
+    // שולף את התעריף לפי קבוצה וסניף
+    return queryasrow(
+        'SELECT t.*
+         FROM "אברכים" a
+         JOIN "קבוצות" k ON a."קבוצה" = k."שם"
+         JOIN "תעריפים" t ON t."קוד סניף" = k."סניף_id"
+         WHERE a."אברך_id" = $1
+           AND t."תאריך התחלה" <= $2
+           AND (t."תאריך סיום" >= $2 OR t."תאריך סיום" IS NULL)
+           AND t."סטטוס" = \'כן\'
+         ORDER BY t."תאריך התחלה" DESC
+         LIMIT 1',
+        [$avrech_id, $date]
+    );
+}
+
+
+
+// ------------------------------------------------------------
+// מחשב את הסכום של תיקון/מבחן/חבורה/סוגיה
+// ------------------------------------------------------------
+function calc_tikun_amount($avrech_id, $sug, $kamut = 1, $summary = null, $tarif = null) {
+    if(!$summary || !$tarif) {
+        // שליפת סיכום ותעריף אם לא סופקו
+        $summary = queryasrow('SELECT * FROM test_summary WHERE avrech_id=$1', [$avrech_id]);
+        $ldate = $summary["ldate"] ?? date('Y-m-d');
+        $tarif = get_tarif_for_date($avrech_id, $ldate);
+    }
+
+    $amount = 0;
+
+    switch ($sug) {
+        case 'מבחן שבועי':
+            if(intval($summary["weekly_count"]) >= 2) {
+                $amount = floatval($tarif["תעריף מבחן שבועי"] ?? 0);
+            }
+            break;
+
+        case 'מבחן חודשי':
+            if(intval($summary["weekly_count"]) >= 3 && ($summary["monthly_test"] === 't' || $summary["monthly_test"] === true)) {
+                $amount = floatval($tarif["תעריף מבחן חודשי"] ?? 0);
+            }
+            break;
+
+        case 'חבורה':
+            if($summary["chabura_pe"] === 't' || $summary["chabura_pe"] === true) {
+                $amount = floatval($tarif["תעריף חבורה"] ?? 0);
+                if($summary["chabura_ktav"] === 't' || $summary["chabura_ktav"] === true) {
+                    $amount += floatval($tarif["תעריף חבורה"] ?? 0);
+                }
+            }
+            break;
+
+        case 'סוגיה':
+            $amount = intval($summary["sugya_summary"]) * floatval($tarif["תעריף סוגיה"] ?? 0);
+            break;
+
+        case 'בסיס':
+            $amount = floatval($tarif["תעריף בסיס"] ?? 0);
+            break;
+
+        default:
+            $amount = 0;
+    }
+
+    return $kamut * $amount;
+}
+
+function apply_fix_and_update_payment($p) {
+
     error_log("🔎 נתונים שהתקבלו לפונקציה:");
     error_log(print_r($p, true));
-    
+
+    /* ================= ניקוי קלט ================= */
     $month = preg_replace('/\s+/', '', trim($p["חודש"] ?? ''));
     $year = preg_replace('/\s+/', '', trim($p["שנה"] ?? ''));
     $year = str_replace(['״', '"', "'", '׳'], '', $year);
 
-    $avrech_id = $p["avrech_id"];
-    $fix_month = $p["חודש_תיקון"];
-    $fix_year = $p["שנה_תיקון"];
-    $isra = $p["ישראשראי"] ?? 0;
-    $otherPay = $p["תשלום_אחר"] ?? 0;
-    $maanak=0;
+    $avrech_id = intval($p["avrech_id"]);
+    $fix_month = $p["חודש_תיקון"] ?? null;
+    $fix_year  = $p["שנה_תיקון"] ?? null;
 
-    $sum = 0;
-    $diff = 0;
-    $sql_summary = <<<SQL
-    SELECT * FROM test_summary
-    WHERE avrech_id = $1 AND month_name = $2 AND year_hebrew = $3
-    SQL;
-   error_log("🔍 מחפש test_summary עבור avrech_id=$avrech_id, month=$month, year=$year");
+    $maanak = 0;
 
-   $summary = queryasrow($sql_summary, [$avrech_id, $month, $year]);
-   error_log("🔍 תוצאת summary:");
-   error_log(print_r($summary, true));
-   if (empty($summary) || empty($summary["ldate"])) {
-    error_log("❌ שורת summary חסרה או ללא תאריך לועזי.");
-    return ["error" => "❌ אין שורת סיכום תקינה ב־test_summary (חסרה או ללא תאריך לועזי)."];
-  }
- 
-   $ldate = $summary["ldate"];
+    /* ================= שליפת summary ================= */
+    $summary = queryasrow(
+        'SELECT * FROM test_summary 
+         WHERE avrech_id=$1 AND month_name=$2 AND year_hebrew=$3',
+        [$avrech_id, $month, $year]
+    );
 
+    $ldate = $summary["ldate"] ?? null;
+
+    /* ================= שליפת תעריף ================= */
     $tarif = get_tarif_for_avrech_and_date($avrech_id, $ldate);
-    if (!$tarif) return ["error" => "אין תעריף מתאים"];
 
-    $w = intval($summary["weekly_count"]);
-    $m = $summary["monthly_test"] === 't';
-    $chaburaPe = $summary["chabura_pe"] === 't';
-    $chaburaKtav = $summary["chabura_ktav"] === 't';
-    $sugyaCount = intval($summary["sugya_summary"]);
+    /* ================= חישוב סכום מבחנים ================= */
+    $sum = 0;
+    if ($summary) {
+        $weeklyCount = intval($summary["weekly_count"]);
+        $monthlyTest = ($summary["monthly_test"] === 't');
+        $chaburaPe   = ($summary["chabura_pe"] === 't');
+        $chaburaKtav = ($summary["chabura_ktav"] === 't');
+        $sugyaCount  = intval($summary["sugya_summary"]);
 
-    if ($w >= 2) {
-        $sum += $w * floatval($tarif["תעריף מבחן שבועי"]);
-        if ($w >= 3 && $m) {
-            $sum += floatval($tarif["תעריף מבחן חודשי"]);
+        if ($weeklyCount >= 2) {
+            $sum += $weeklyCount * floatval($tarif["תעריף מבחן שבועי"]);
+            if ($weeklyCount >= 3 && $monthlyTest) {
+                $sum += floatval($tarif["תעריף מבחן חודשי"]);
+            }
         }
-    }
-    if ($chaburaPe) {
-        $sum += floatval($tarif["תעריף חבורה"]);
-        if ($chaburaKtav) {
+
+        if ($chaburaPe) {
             $sum += floatval($tarif["תעריף חבורה"]);
+            if ($chaburaKtav) {
+                $sum += floatval($tarif["תעריף חבורה"]);
+            }
         }
+
+        $sum += $sugyaCount * floatval($tarif["תעריף סוגיה"]);
     }
-    $sum += $sugyaCount * floatval($tarif["תעריף סוגיה"]);
+    $sum = round($sum, 2);
 
-   
-    
-    $row = queryasrow(<<<SQL
-        SELECT "סכום" FROM "תשלומים"
-        WHERE avrech_id = $1 AND "חודש" = $2 AND "שנה" = $3
-    SQL, [$avrech_id, $month, $year]);
-    $prev = $row ? floatval($row["סכום"]) : 0;
+    /* ================= הבטחת שורת תשלומים ================= */
+    $paymentRow = queryasrow(
+        'SELECT "סכום_מבחנים","סכום_תיקונים" FROM "תשלומים"
+         WHERE avrech_id=$1 AND "חודש"=$2 AND "שנה"=$3',
+        [$avrech_id, $month, $year]
+    );
 
+    if (!$paymentRow) {
+        doq(
+            'INSERT INTO "תשלומים" (avrech_id, "חודש", "שנה", "סכום_מבחנים","סכום_תיקונים")
+             VALUES ($1,$2,$3,0,0)',
+            [$avrech_id, $month, $year]
+        );
+        $prev = 0;
+    } else {
+        $prev = floatval($paymentRow["סכום_מבחנים"]);
+    }
+
+    /* ================= חישוב הפרש ================= */
     $diff = round($sum - $prev, 2);
-    
-   
+    error_log("SUM = $sum | PREV = $prev | DIFF = $diff");
 
+    /* ================= עדכון סכום מבחנים ================= */
+    if ($diff != 0) {
+        doq(
+            'UPDATE "תשלומים"
+             SET "סכום_מבחנים"=$1
+             WHERE avrech_id=$2 AND "חודש"=$3 AND "שנה"=$4',
+            [$sum, $avrech_id, $month, $year]
+        );
+    }
 
-    $sql_kolel = <<<SQL
-    SELECT 
-    COALESCE("sdarim_Z_sum", 0) AS sdr,
-    COALESCE("base", 0) AS base,
-    COALESCE("sm", 0) AS sm
-    FROM "h_to_office"
-    JOIN "אברכים" ON "tz" = "תז"
-    WHERE "אברך_id" = $1
-    LIMIT 1
-    SQL;
-    
-    $kolel_data = queryasrow($sql_kolel, [$avrech_id]);
-    error_log("🔍 נתוני kolel_data: " . print_r($kolel_data, true));
+    /* ================= חישוב סכום כולל ================= */
+    $kolel_data = queryasrow(
+        'SELECT 
+            COALESCE("sdarim_Z_sum",0) AS sdr,
+            COALESCE("base",0) AS base,
+            COALESCE("sm",0) AS sm
+         FROM "h_to_office"
+         JOIN "אברכים" ON "tz"="תז"
+         WHERE "אברך_id"=$1
+         LIMIT 1',
+        [$avrech_id]
+    );
 
-    $kolel_sum = 0;
     $total_sum = 0;
-    $afterMaaser=$p['סכום_אחר_מעשר'] ?? 0;
     if ($kolel_data) {
         $total_sum = round(
             floatval($kolel_data['sdr']) +
@@ -745,119 +879,92 @@ function get_fix_totals($p) {
             floatval($kolel_data['sm']),
             2
         );
-            }
-            error_log("🔍 kolel_sum מחושב כ: " . $total_sum);
+    }
 
-    $kolel_sum=$diff+$total_sum+$sum;
-    error_log("🔍 kolel_sum מחושב כ: " . $kolel_sum);
-
-    // 🟡 טיפוס תיקון
+    /* ================= טיפול בסוגי תיקון ================= */
     $type = $p["סוג_תיקון"] ?? '';
+
+    // שליפת סכום תיקונים קיים לטופס תיקון
+    $existing_fix = 0;
+    $fixPaymentRow = queryasrow(
+        'SELECT "סכום_תיקונים" FROM "תשלומים"
+         WHERE avrech_id=$1 AND "חודש"=$2 AND "שנה"=$3',
+        [$avrech_id, $fix_month, $fix_year]
+    );
+    if ($fixPaymentRow) {
+        $existing_fix = floatval($fixPaymentRow["סכום_תיקונים"] ?? 0);
+    }
+
+    /* ================= חישוב סכום תיקון חדש ================= */
+    $amount = 0;
+
     if ($type === 'מעשר מתוספת חג') {
-        $sql_percent = 'SELECT "מעשר_באחוזים" FROM "אברכים" WHERE "אברך_id" = $1';
-        $res_percent = queryasrow($sql_percent, [$avrech_id]);
-        $percent = floatval($res_percent["מעשר_באחוזים"] ?? 0);
+        $percentRow = queryasrow(
+            'SELECT "מעשר_באחוזים" FROM "אברכים" WHERE "אברך_id"=$1',
+            [$avrech_id]
+        );
+        $percent = floatval($percentRow["מעשר_באחוזים"] ?? 0);
+        $amount = ($percent > 0) ? -round(($percent/100)*400,2) : 0;
 
-        if ($percent > 0) {
-            $maaser_amount = -round(($percent / 100) * 400, 2); // הפחתה לפי אחוז
-        //update_payment_fix_sum($avrech_id, $fix_month, $fix_year, $maaser_amount,$kolel_sum,/*$isra,$othePay//);
-        save_or_fix_payments([[
-            "avrech_id" => $avrech_id,
-            "חודש" => $fix_month,
-            "שנה" => $fix_year,
-            "סכום_תיקונים" => $maaser_amount,
-           "סכום_כולל" => $kolel_sum,
-            "is_fix" => true,
-            "maanakIsra"=>$maanak
+    } elseif (str_starts_with($type,'תוספת: ')) {
+        $tosafetName = trim(substr($type,8));
+        $tosafetNameClean = trim(str_replace(['ת:', '"'], '', $tosafetName));
+        $resTosefet = queryasrow(
+            'SELECT "תעריף" FROM "תוספות" WHERE "שם תוספת" ILIKE $1 LIMIT 1',
+            ["%$tosafetNameClean%"]
+        );
+        if (!$resTosefet)
+            return ["error"=>"לא נמצא תעריף לתוספת $tosafetName"];
+        $amount = floatval($resTosefet["תעריף"]);
 
-            //"סכום_אחר_מעשר" => $afterMaaser
+    } elseif ($type === 'אחר') {
+        $amount = floatval($p["סכום_חופשי"] ?? 0);
+        if ($amount == 0)
+            return ["error"=>"לא הוזן סכום חופשי"];
 
-            //"ישראשראי" => $p['ישראשראי'] ?? 0,
-           // "תשלום_אחר" => $p['תשלום_אחר'] ?? 0
-            
-
-        ]]);
-        
-            return ["success" => true, "מעשר_מהתוספת" => $maaser_amount];
-        } else {
-            return ["success" => true, "מעשר_מהתוספת" => 0];
-        }
+    } else {
+        $amount = $diff;
     }
-    // ✅ טיפול בתוספות
-    if (str_starts_with($type, 'תוספת: ')) {
-        $tosafetName = trim(substr($type, strlen('תוספת: ')));
 
-        $sqlTosefet = 'SELECT "תעריף" FROM "תוספות" WHERE "שם תוספת" = $1 LIMIT 1';
-        $resTosefet = queryasrow($sqlTosefet, [$tosafetName]);
-        $normalized = trim(str_replace(['-', '(', ')'], '', $tosafetName));
-        $sqlmaanak='SELECT "ישראשראי" FROM "תשלומים" WHERE "avrech_id" = $1 and "חודש"=$2 and "שנה"=$3';
-        $resMaanak = queryasrow($sqlmaanak, [$avrech_id,$month,$year]);
-        $maanak = floatval($resMaanak["ישראשראי"])-500;
+    /* ----- סכום מצטבר ----- */
+    $new_fix_sum = round($existing_fix + $amount, 2);
 
-        // בדיקה לפי מחרוזות שמכילות, לא התאמה מלאה
-        if (str_contains($normalized, "מענק לידה")) {
-            $maanak += 200;
-        } elseif (str_contains($normalized, "מענק בר מצווה")) {
-            $maanak += 250;
-        } elseif (str_contains($normalized, "מענק חתונה")) {
-            $maanak += 700;
-        }
-        if (!$resTosefet) return ["error" => "לא נמצא תעריף לתוספת $tosafetName"];
-        $tarifTosefet = floatval($resTosefet["תעריף"]);
+    /* ================= שמירה בטבלת תשלומים ================= */
+    doq(
+        'UPDATE "תשלומים"
+         SET "סכום_תיקונים"=$1
+         WHERE avrech_id=$2 AND "חודש"=$3 AND "שנה"=$4',
+        [$new_fix_sum, $avrech_id, $fix_month, $fix_year]
+    );
 
-    //update_payment_fix_sum($avrech_id, $fix_month, $fix_year, $tarifTosefet,$kolel_sum/*,$isra,$othePay//);
+    /* ================= חישוב סכום כולל כולל תיקונים ================= */
+    $kolel_sum = round($total_sum + $sum + $new_fix_sum, 2);
 
-     save_or_fix_payments([[
-        "avrech_id" => $avrech_id,
-        "חודש" => $fix_month,
-        "שנה" => $fix_year,
-        "סכום_תיקונים" => $tarifTosefet,
-        "סכום_כולל" => $kolel_sum,
-        "is_fix" => true,
-        "maanakIsra"=>$maanak
-
-       
+    /* ================= שמירה דרך הפונקציה הקיימת ================= */
+    save_or_fix_payments([[ 
+        "avrech_id"=>$avrech_id,
+        "חודש"=>$fix_month,
+        "שנה"=>$fix_year,
+        "סכום_תיקונים"=>$new_fix_sum,
+        "סכום_כולל"=>$kolel_sum,
+        "is_fix"=>true,
+        "maanakIsra"=>$maanak,
+        "סוג_תיקון"=>$type,
+        "for_month"=>$month,
+        "for_year"=>$year
     ]]);
-    
-        return ["success" => true, "תוספת" => $tarifTosefet];
-    }
 
-  
-    // ✅ טיפול ב"אחר"
-    if ($type === 'אחר') {
-        $tarif = floatval($p["סכום_חופשי"] ?? 0);
-        if ($tarif === 0) return ["error" => "לא הוזן סכום חופשי בתיקון מסוג 'אחר'"];
-
-    //update_payment_fix_sum($avrech_id, $fix_month, $fix_year, $tarif,$kolel_sum/*,$isra,$othePay/);
-    save_or_fix_payments([[
-        "avrech_id" => $avrech_id,
-        "חודש" => $fix_month,
-        "שנה" => $fix_year,
-        "סכום_תיקונים" => $tarif,
-       "סכום_כולל" => $kolel_sum,
-        "is_fix" => true,
-        "maanakIsra"=>$maanak
-
-        //"סכום_אחר_מעשר" => $afterMaaser
-
-       // "ישראשראי"=>$isra,
-         //   "תשלום_אחר"=>$otherPay
-    ]]);
-        return ["success" => true, "תיקון_אחר" => $tarif];
-    }
-    
-    
-   
-
-
-    return ["success" => true, "new_sum" => $sum, "diff" => $diff];
+    return [
+        "success"=>true,
+        "new_sum"=>$sum,
+        "diff"=>$diff,
+        "fix_sum"=>$new_fix_sum,
+        "kolel_sum"=>$kolel_sum
+    ];
 }
 
-*/
 
-
-
-function apply_fix_and_update_payment($p) {
+/*function apply_fix_and_update_payment($p) {
     error_log("🔎 נתונים שהתקבלו לפונקציה:");
     error_log(print_r($p, true));
 
@@ -1037,7 +1144,7 @@ function apply_fix_and_update_payment($p) {
         "for_year" => $year
     ]]);
     return ["success" => true, "new_sum" => $sum, "diff" => $diff];
-}
+}*/
 
 function  maaser($avrech_id,$sumKolel){
     $sql_maaser = <<<SQL
@@ -1081,8 +1188,128 @@ function israAshray($avrech_id){
 }
 
 //-------------------------תשלומים
-
 function save_or_fix_payments($rows) {
+    foreach ($rows as $r) {
+        $avrech_id = $r["avrech_id"];
+        $month = $r["חודש"];
+        $year = $r["שנה"];
+        $fix_for_month = $r["for_month"] ?? null;
+        $fix_for_year = $r["for_year"] ?? null;
+        $maanak = isset($r["maanakIsra"]) ? floatval($r["maanakIsra"]) : 0;
+        $fix_type = $r["סוג_תיקון"] ?? null;
+
+        $is_fix = isset($r["is_fix"]) && $r["is_fix"];
+
+        $base_sum = isset($r["סכום"]) ? floatval($r["סכום"]) : 0;
+        $fix_amount = isset($r["סכום_תיקונים"]) ? floatval($r["סכום_תיקונים"]) : 0;
+        $kolel_sum = isset($r["סכום_כולל"]) ? floatval($r["סכום_כולל"]) : 0;
+
+        $sumTav = isset($r["תווי_קניה_שח"]) ? floatval($r["תווי_קניה_שח"]) : 0;
+        $betyitzhak = isset($r["בית_יצחק"]) ? floatval($r["בית_יצחק"]) : 0;
+        $betyitzhakPagi = isset($r["בית_יצחק_פאגי"]) ? floatval($r["בית_יצחק_פאגי"]) : 0;
+        $gmach = isset($r["גמח_נר_ישראל"]) ? floatval($r["גמח_נר_ישראל"]) : 0;
+
+        // תיקון עיקרי: חנות_תו חייב להיות מחרוזת ריקה אם אין ערך
+        $shopTav = isset($r["חנות_תו"]) && $r["חנות_תו"] !== "" ? $r["חנות_תו"] : '';
+
+        // חישוב ישראשראי
+        $isra = israAshray($avrech_id);
+
+        // חישוב afterMaaser
+        $afterMaaser = maaser($avrech_id, $kolel_sum);
+
+        // חישוב other_pay בצורה מסונכרנת
+        $other_pay = $afterMaaser - $isra - $sumTav - $betyitzhak - $betyitzhakPagi - $gmach;
+
+        // חלוקה של תווי קניה חצי חצי (מתקן חישוב)
+        if ($sumTav != 0) {
+            $half = $sumTav / 2;
+            $other_pay -= $half; // חצי לתשלום אחר
+            // $isra נשאר כפי שהוא
+        }
+
+        // טיפול בתיקונים מצטברים
+        if ($is_fix) {
+            $res_check = queryasrow(
+                'SELECT "sum" FROM "תיקונים_רגילים"
+                 WHERE avrech_id=$1 AND "חודש"=$2 AND "שנה"=$3
+                 AND "חודש_תיקון"=$4 AND "שנה_תיקון"=$5
+                 LIMIT 1',
+                [$avrech_id, $fix_for_month, $fix_for_year, $month, $year]
+            );
+
+            $previous_fix = 0;
+            $t_data = queryasrow(
+                'SELECT COALESCE("סכום_תיקונים",0) AS t
+                 FROM "תשלומים"
+                 WHERE avrech_id=$1 AND "חודש"=$2 AND "שנה"=$3
+                 LIMIT 1',
+                [$avrech_id, $month, $year]
+            );
+            $previous_fix = round(floatval($t_data['t'] ?? 0), 2);
+
+            if ($fix_type === 'רגיל' && $res_check) {
+                $old_sum = floatval($res_check['sum']);
+                $previous_fix -= $old_sum;
+
+                doq(
+                    'UPDATE "תיקונים_רגילים"
+                     SET "sum"=$1
+                     WHERE avrech_id=$2 AND "חודש"=$3 AND "שנה"=$4
+                     AND "חודש_תיקון"=$5 AND "שנה_תיקון"=$6',
+                    [$fix_amount, $avrech_id, $fix_for_month, $fix_for_year, $month, $year]
+                );
+            } elseif ($fix_type === 'רגיל' && !$res_check) {
+                doq(
+                    'INSERT INTO "תיקונים_רגילים" 
+                    (avrech_id, "חודש", "שנה", "חודש_תיקון", "שנה_תיקון", "sum")
+                    VALUES ($1,$2,$3,$4,$5,$6)',
+                    [$avrech_id, $fix_for_month, $fix_for_year, $month, $year, $fix_amount]
+                );
+            }
+
+            $fix_amount += $previous_fix;
+            $kolel_sum += $fix_amount;
+            $afterMaaser = maaser($avrech_id, $kolel_sum);
+            $other_pay = $afterMaaser - $isra - $sumTav - $betyitzhak - $betyitzhakPagi - $gmach;
+        }
+
+        // פרמטרים לשמירה
+        $extra_fields = ', ישראשראי, תשלום_אחר, סכום_אחר_מעשר, תווי_קניה_שח, חנות_תו, בית_יצחק, בית_יצחק_פאגי, גמח_נר_ישראל';
+        $extra_vals   = ", \$7, \$8, \$9, \$10, \$11, \$12, \$13, \$14";
+        $extra_update = ", ישראשראי=\$7, תשלום_אחר=\$8, סכום_אחר_מעשר=\$9,
+                          תווי_קניה_שח=\$10, חנות_תו=\$11, בית_יצחק=\$12,
+                          בית_יצחק_פאגי=\$13, גמח_נר_ישראל=\$14";
+
+        $params = [
+            $avrech_id, $month, $year,
+            $base_sum, $fix_amount, $kolel_sum,
+            $isra, $other_pay, $afterMaaser,
+            $sumTav, $shopTav, $betyitzhak, $betyitzhakPagi, $gmach
+        ];
+
+        $sql = <<<SQL
+            INSERT INTO "תשלומים"
+            (avrech_id, "חודש", "שנה", סכום_מבחנים, סכום_תיקונים, סכום_כולל $extra_fields)
+            VALUES ($1,$2,$3,$4,$5,$6 $extra_vals)
+            ON CONFLICT (avrech_id,"חודש","שנה") DO UPDATE SET
+                סכום_מבחנים=$4,
+                סכום_תיקונים=$5,
+                סכום_כולל=$6
+                $extra_update
+        SQL;
+
+        error_log("🔄 מבצע שמירה למסד עם השאילתה: $sql");
+        error_log("🧾 פרמטרים: " . print_r($params, true));
+
+        doq($sql, $params);
+    }
+
+    return ["success" => true];
+}
+
+
+/*function save_or_fix_payments($rows) {
     foreach ($rows as $r) {
         $avrech_id = $r["avrech_id"];
         $month = $r["חודש"];
@@ -1107,7 +1334,7 @@ function save_or_fix_payments($rows) {
         if ($maaser_data && is_array($maaser_data)) {
             $mk = round(floatval($maaser_data['mkavua']));
             $mp = round(floatval($maaser_data['mpercent']));
-        }*/
+        }/
        
         $is_fix = isset($r["is_fix"]) && $r["is_fix"]; // האם תיקון מצטבר
 
@@ -1131,7 +1358,7 @@ function save_or_fix_payments($rows) {
         // חישוב לאחר מעשר
         /*$afterMaaser = $kolel_sum;
         if ($mk != 0) $afterMaaser -= $mk;
-        if ($mp != 0) $afterMaaser *= (1 - $mp / 100);*/
+        if ($mp != 0) $afterMaaser *= (1 - $mp / 100);/
         $afterMaaser=maaser($r["avrech_id"],$kolel_sum);    
             // קבלת עיר וקבוצה
        /* $sql_avrech = 'SELECT "עיר", "קבוצה" FROM "אברכים" WHERE "אברך_id" = $1';
@@ -1144,7 +1371,7 @@ function save_or_fix_payments($rows) {
         if ($group === "רבנים" || $city !== "רכסים") {
             $isra = 0;
             $maanak = 0;
-        }*/
+        }/
    $isra=israAshray($avrech_id);
   if($isra==0)
     $maanak = 0;
@@ -1212,7 +1439,7 @@ $res_check = queryasrow($sql_check, [$avrech_id, $fix_for_month, $fix_for_year, 
 
     /*$afterMaaser = $kolel_sum;
     if ($mk != 0) $afterMaaser -= $mk;
-    if ($mp != 0) $afterMaaser *= (1 - $mp / 100);*/
+    if ($mp != 0) $afterMaaser *= (1 - $mp / 100);/
     $afterMaaser=maaser($r["avrech_id"],$kolel_sum);    
 
     $isra += $maanak;
@@ -1323,211 +1550,8 @@ return ["success" => true];
 }
 }
 
+*/
 
-/*function save_or_fix_payments($rows) {
-    foreach ($rows as $r) {
-        $avrech_id = $r["avrech_id"];
-        $month = $r["חודש"];
-        $year = $r["שנה"];
-        $maanak = isset($r["maanakIsra"]) ? floatval($r["maanakIsra"]) : 0;
-
-        // קבלת נתוני מעשר
-        $sql_maaser = <<<SQL
-            SELECT 
-                COALESCE("מעשר_קבוע", 0) AS mKavua,
-                COALESCE("מעשר_באחוזים", 0) AS mPercent
-            FROM "אברכים"
-            WHERE "אברך_id" = $1
-            LIMIT 1
-        SQL;
-        $maaser_data = queryasrow($sql_maaser, [$avrech_id]);
-
-        $mk = 0;
-        $mp = 0;
-        if ($maaser_data && is_array($maaser_data)) {
-            $mk = round(floatval($maaser_data['mkavua']));
-            $mp = round(floatval($maaser_data['mpercent']));
-        }
-       
-        $is_fix = isset($r["is_fix"]) && $r["is_fix"]; // האם תיקון מצטבר
-
-        $base_sum = isset($r["סכום"]) ? floatval($r["סכום"]) : 0;
-        $fix_amount = isset($r["סכום_תיקונים"]) ? floatval($r["סכום_תיקונים"]) : 0;
-        
-        $kolel_sum = isset($r["סכום_כולל"]) ? floatval($r["סכום_כולל"]) : 0;
-
-        $sumTav = isset($r["תווי_קניה_שח"]) ? floatval($r["תווי_קניה_שח"]) : 0;
-        $betyitzhak = isset($r["בית_יצחק"]) ? floatval($r["בית_יצחק"]) : 0;
-        $gmach = isset($r["גמח_נר_ישראל"]) ? floatval($r["גמח_נר_ישראל"]) : 0;
-        
-        //$sumTav = $r["תווי_קניה_שח"];
-        $shopTav ="";
-
-        $half=$sumTav/2;
-       // $betyitzhak = $r["בית_יצחק"];
-        //$gmach = $r["גמח_נר_ישראל"];
-
-        // חישוב לאחר מעשר
-        $afterMaaser = $kolel_sum;
-        if ($mk != 0) $afterMaaser -= $mk;
-        if ($mp != 0) $afterMaaser *= (1 - $mp / 100);
-
-        // קבלת עיר וקבוצה
-        $sql_avrech = 'SELECT "עיר", "קבוצה" FROM "אברכים" WHERE "אברך_id" = $1';
-        $res_avrech = queryasrow($sql_avrech, [$avrech_id]);
-
-        $city = trim($res_avrech["עיר"] ?? "");
-        $group = trim($res_avrech["קבוצה"] ?? "");
-        $isra = 500;
-
-        if ($group === "רבנים" || $city !== "רכסים") {
-            $isra = 0;
-            $maanak = 0;
-        }
-
-        //$other_pay = $afterMaaser - $isra;
-        $other_pay = $afterMaaser - $isra-$betyitzhak-$gmach;
-
-      /*        // קבלת נתוני תווי קניה
-       $sql_tavim = <<<SQL
-       SELECT 
-           COALESCE("סכום", 0) AS sum,
-           COALESCE("חנות") AS shop
-       FROM "תווי_קניה_קבועים"
-       WHERE "אברך_id" = $1
-       LIMIT 1
-      SQL;
-      $tavim_data = queryasrow($sql_tavim, [$avrech_id]);
-
-  
-   if ($tavim_data && is_array($tavim_data)) {
-       $sumTav = round(floatval($tavim_data['sum']));
-       $shopTav = $tavim_data['shop'];
-       $half=$sumTav/2;
-       
-   }//
-   if ($is_fix) {
-           
-    // קריאה לתיקונים קודמים
-    $sql_tikunim = <<<SQL
-        SELECT COALESCE("סכום_תיקונים", 0) AS t
-        FROM "תשלומים"
-        WHERE avrech_id = $1 AND "חודש" = $2 AND "שנה" = $3
-        LIMIT 1
-    SQL;
-    $t_data = queryasrow($sql_tikunim, [$avrech_id, $month, $year]);
-    $previous_fix = round(floatval($t_data['t'] ?? 0));
-   
-    $fix_amount += $previous_fix;
-
-   $kolel_sum += $fix_amount;
-    //$kolel_sum = $base_sum + $fix_amount;
-
-    $afterMaaser = $kolel_sum;
-    if ($mk != 0) $afterMaaser -= $mk;
-    if ($mp != 0) $afterMaaser *= (1 - $mp / 100);
-
-    $isra += $maanak;
-    $other_pay = $afterMaaser - $isra-$sumTav-$betyitzhak-$gmach;
-   // $other_pay = $afterMaaser - $isra-$sumTav;
-
-    $sql = <<<SQL
-        INSERT INTO "תשלומים" (avrech_id, "חודש", "שנה", "סכום_תיקונים", "סכום_כולל", "ישראשראי", "תשלום_אחר", "סכום_אחר_מעשר")
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-        ON CONFLICT (avrech_id, "חודש", "שנה") DO UPDATE SET
-            "סכום_תיקונים" = $4,
-            "סכום_כולל" = $5,
-            "ישראשראי" = $6,
-            "תשלום_אחר" = $7,
-            "סכום_אחר_מעשר" = $8
-            
-    SQL;
-
-    $params = [$avrech_id, $month, $year, $fix_amount, $kolel_sum, $isra, $other_pay, $afterMaaser];
-} else {
-
-if($sumTav!=0){
-$shopTav =$r["חנות_תו"];
-
-$isra-=$half;
-$other_pay-=$half;
-}
-    $extra_fields = "";
-    $extra_vals = "";
-    $extra_update = "";
-
-    $params = [$avrech_id, $month, $year, $base_sum, $fix_amount, $kolel_sum];
-    $param_index = 7;
-
-    if (!is_null($isra)) {
-        $extra_fields .= ', ישראשראי';
-        $extra_vals .= ", \$$param_index";
-        $extra_update .= ", ישראשראי = \$$param_index";
-        $params[] = $isra;
-        $param_index++;
-    }
-
-    if (!is_null($other_pay)) {
-        $extra_fields .= ', תשלום_אחר';
-        $extra_vals .= ", \$$param_index";
-        $extra_update .= ", תשלום_אחר = \$$param_index";
-        $params[] = $other_pay;
-        $param_index++;
-    }
-
-    if (!is_null($afterMaaser)) {
-        $extra_fields .= ', סכום_אחר_מעשר';
-        $extra_vals .= ", \$$param_index";
-        $extra_update .= ", סכום_אחר_מעשר = \$$param_index";
-        $params[] = $afterMaaser;
-        $param_index++;
-    }
-    if (!is_null($sumTav)) {
-        $extra_fields .= ', תווי_קניה_שח';
-        $extra_vals .= ", \$$param_index";
-        $extra_update .= ", תווי_קניה_שח = \$$param_index";
-        $params[] = $sumTav;
-        $param_index++;
-    }  if (!is_null($shopTav)&&$shopTav!="") {
-        $extra_fields .= ', חנות_תו';
-        $extra_vals .= ", \$$param_index";
-        $extra_update .= ", חנות_תו = \$$param_index";
-        $params[] = $shopTav;
-        $param_index++;
-    }
-    if (!is_null($betyitzhak)) {
-        $extra_fields .= ', בית_יצחק';
-        $extra_vals .= ", \$$param_index";
-        $extra_update .= ", בית_יצחק = \$$param_index";
-        $params[] = $betyitzhak;
-        $param_index++;
-    }if (!is_null($gmach)) {
-        $extra_fields .= ', גמח_נר_ישראל';
-        $extra_vals .= ", \$$param_index";
-        $extra_update .= ", גמח_נר_ישראל = \$$param_index";
-        $params[] = $gmach;
-        $param_index++;
-    }
-
-    $sql = <<<SQL
-        INSERT INTO "תשלומים" (avrech_id, "חודש", "שנה", סכום, סכום_תיקונים, סכום_כולל $extra_fields)
-        VALUES ($1, $2, $3, $4, $5, $6 $extra_vals)
-        ON CONFLICT (avrech_id, "חודש", "שנה") DO UPDATE SET
-            סכום = $4,
-            סכום_תיקונים = $5,
-            סכום_כולל = $6
-            $extra_update
-    SQL;
-}
-
-error_log("🔄 מבצע שמירה למסד עם השאילתה: $sql");
-error_log("🧾 פרמטרים: " . print_r($params, true));
-
-doq($sql, $params);
-}
-
-return ["success" => true];
-}*/
 
 //========================תווי קניה
 function get_tav_kniya_kvuim() {
@@ -1587,49 +1611,8 @@ function save_fixed_tavim($p) {
          [$avrech_id, $amount, $store]);
 }*/
 
+
 /*function update_deposits_from_payments($p) {
-    $month = $p["חודש"] ?? null;
-    $year = $p["שנה"] ?? null;
-
-    if (!$month || !$year) {
-        return ["success" => false, "error" => "חסר חודש או שנה"];
-    }
-
-    // שלב 1: שליפת כל התשלומים עבור החודש והשנה
-    $payments = queryasarray("
-        SELECT avrech_id, תשלום_אחר, בית_יצחק, גמח_נר_ישראל
-        FROM תשלומים
-        WHERE חודש = $1 AND שנה = $2
-    ", [$month, $year]);
-
-    foreach ($payments as $pmt) {
-        $avrech_id = $pmt["avrech_id"];
-        $sumNY = ($pmt["תשלום_אחר"] ?? 0);
-        $sumBY = ($pmt["בית_יצחק"] ?? 0);
-        $sumGNY = ($pmt["גמח_נר_ישראל"] ?? 0);
-
-        // בדיקה אם קיימת כבר שורה בטבלת פעימות לאברך הזה
-        $existing = queryasrow("SELECT 1 FROM פעימות WHERE avrech_id = $1", [$avrech_id]);
-
-        if ($existing) {
-            // עדכון שורה קיימת
-            doq("UPDATE פעימות SET sum = $1, hefresh = 0 WHERE avrech_id = $2", [$sum, $avrech_id]);
-        } else {
-            // הכנסת שורה חדשה
-            /*doqinsert("פעימות", [
-                "avrech_id" => $avrech_id,
-                "sum" => $sum,
-                "hefresh" => 0
-            ]);//
-            $h=0;
-            doq("INSERT INTO פעימות (avrech_id,sum ,hefresh ) VALUES ($1, $2, $3)", [$avrech_id, $sum, $h]);
-
-        }
-    }
-
-    return ["success" => true];
-}*/
-function update_deposits_from_payments($p) {
     $month = $p["חודש"] ?? null;
     $year = $p["שנה"] ?? null;
 
@@ -1675,8 +1658,61 @@ function update_deposits_from_payments($p) {
     }
 
     // לאחר יצירת הפקדה ראשונה, אפשר לקרוא את create_masav עבור החודש והשנה
-    create_masav($month, $year);
+    //create_masav($month, $year);
+    create_masav_files($month, $year);
 
+    return ["success" => true];
+}*/
+function update_deposits_from_payments($p) {
+    $month = $p["חודש"] ?? null;
+    $year = $p["שנה"] ?? null;
+
+    if (!$month || !$year) {
+        return ["success" => false, "error" => "חסר חודש או שנה"];
+    }
+
+    // שליפת כל התשלומים עבור החודש והשנה
+    $payments = queryasarray("
+        SELECT avrech_id, תשלום_אחר, בית_יצחק_פאגי, בית_יצחק, גמח_נר_ישראל
+        FROM תשלומים
+        WHERE חודש = $1 AND שנה = $2
+    ", [$month, $year]);
+
+    foreach ($payments as $pmt) {
+        $avrech_id = $pmt["avrech_id"];
+        $sumNY = ($pmt["תשלום_אחר"] ?? 0);
+        $sumBY = ($pmt["בית_יצחק"] ?? 0);
+        $sumBYP = ($pmt["בית_יצחק_פאגי"] ?? 0);
+        $sumGNY = ($pmt["גמח_נר_ישראל"] ?? 0);
+
+        // בדיקה אם כבר קיימת פעימה עבור האברך
+        $existing = queryasrow("SELECT 1 FROM פעימות WHERE avrech_id = $1", [$avrech_id]);
+
+        if ($existing) {
+            // עדכון שורה קיימת לכל המקורות
+            doq("UPDATE פעימות SET 
+                sum_ner_yisrael=$1, hefresh_ner_yisrael=$1,
+                sum_beit_yitzchak=$2, hefresh_beit_yitzchak=$2,
+                sum_gmach_ner_yisrael=$3, hefresh_gmach_ner_yisrael=$3,
+                sum_beit_yitzchak_pagi=$4, hefresh_beit_yitzchak_pagi=$4
+                WHERE avrech_id=$5",
+                [$sumNY, $sumBY, $sumGNY, $sumBYP, $avrech_id]);
+        } else {
+            // הכנסת שורה חדשה עם כל המקורות
+            doq("INSERT INTO פעימות 
+                (avrech_id, sum_ner_yisrael, hefresh_ner_yisrael,
+                 sum_beit_yitzchak, hefresh_beit_yitzchak,
+                 sum_gmach_ner_yisrael, hefresh_gmach_ner_yisrael,
+                 sum_beit_yitzchak_pagi, hefresh_beit_yitzchak_pagi)
+                VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)",
+                [$avrech_id, $sumNY, $sumNY, $sumBY, $sumBY, $sumGNY, $sumGNY, $sumBYP, $sumBYP]);
+        }
+    }
+
+    // יצירת קבצי מס"ב לאחר הזנת הפקדות
+    create_masav_files($month, $year);
+
+    // החזרת JSON תקין ל-JS
     return ["success" => true];
 }
 
@@ -1756,7 +1792,8 @@ function other_deposit($p) {
     }
 
     // עכשיו נוצרים קבצי מס"ב על בסיס ההפרשים
-    create_masav($month, $year);
+   // create_masav($month, $year);
+   create_masav_files($month, $year);
 
     return ["success" => true];
 }
@@ -2146,3 +2183,142 @@ function applyGeneralDepositToTashlumim($p) {
 
     return ["success" => true, "message" => "הפקדה כללית עודכנה בהצלחה"];
 }
+
+
+function get_masav_rows($month, $year, $dbField) {
+    file_put_contents(
+        "C:/xampp/htdocs/dev_s/masav/debug.txt",
+        "INSIDE get_masav_rows for $dbField\n",
+        FILE_APPEND
+    );
+
+    $rows = queryasarray("
+        SELECT
+            a.בנק,
+            a.סניף,
+            a.חשבון,
+            a.תז,
+            (a.משפחה || ' ' || a.פרטי) AS שם,
+            p.$dbField AS סכום,
+            p.avrech_id AS id
+        FROM פעימות p
+        JOIN אברכים a ON a.אברך_id = p.avrech_id
+        WHERE p.$dbField <> 0
+    ");
+
+    file_put_contents(
+        "C:/xampp/htdocs/dev_s/masav/debug.txt",
+        "ROWS count: " . count($rows) . "\n",
+        FILE_APPEND
+    );
+
+    return $rows;
+}
+
+
+
+function create_masav_files($month, $year) {
+
+    $debugFile = "C:/xampp/htdocs/dev_s/masav/debug.txt";
+
+    file_put_contents(
+        $debugFile,
+        "create_masav_files CALLED for $month $year\n",
+        FILE_APPEND
+    );
+
+    $sources = require __DIR__ . '/masav_sources.php';
+
+    foreach ($sources as $key => $src) {
+
+        file_put_contents(
+            $debugFile,
+            "source: {$key}\n",
+            FILE_APPEND
+        );
+        file_put_contents(
+            "C:/xampp/htdocs/dev_s/masav/debug.txt",
+            "BEFORE get_masav_rows\n",
+            FILE_APPEND
+        );
+        
+        $rows = get_masav_rows($month, $year, $src['db_field']);
+        file_put_contents(
+            "C:/xampp/htdocs/dev_s/masav/debug.txt",
+            "AFTER get_masav_rows\n",
+            FILE_APPEND
+        );
+        
+        // 🔍 בדיקה מפורשת
+        if (empty($rows)) {
+            file_put_contents(
+                $debugFile,
+                "SKIPPED {$key} – no rows returned\n",
+                FILE_APPEND
+            );
+            continue;
+        }
+
+        file_put_contents(
+            $debugFile,
+            "rows count for {$key}: " . count($rows) . "\n",
+            FILE_APPEND
+        );
+
+        // שולחים ל־JS שיבנה את המס"ב
+        $payload = [
+            'institution_code' => $src['institution_code'],
+            'institution_name' => $src['institution_name'],
+            'rows' => $rows
+        ];
+
+        $json = json_encode($payload, JSON_UNESCAPED_UNICODE);
+        $tmp  = tempnam(sys_get_temp_dir(), 'masav_');
+        file_put_contents($tmp, $json);
+
+        $node   = 'node';
+        $script = 'C:\\xampp\\htdocs\\dev_s\\js\\masav_builder.js';
+
+        $cmd = "$node \"$script\" \"$tmp\"";
+
+        file_put_contents(
+            $debugFile,
+            "RUNNING: $cmd\n",
+            FILE_APPEND
+        );
+
+        $output = shell_exec($cmd);
+
+        file_put_contents(
+            $debugFile,
+            "node output length: " . strlen((string)$output) . "\n",
+            FILE_APPEND
+        );
+
+        if (empty($output)) {
+            file_put_contents(
+                $debugFile,
+                "ERROR: node returned empty output for {$key}\n",
+                FILE_APPEND
+            );
+            continue;
+        }
+
+        $outDir = "C:/xampp/htdocs/dev_s/masav";
+        if (!is_dir($outDir)) {
+            mkdir($outDir, 0777, true);
+        }
+
+        $filename = "{$outDir}/{$key}_{$year}_{$month}.001";
+        file_put_contents($filename, $output);
+
+        file_put_contents(
+            $debugFile,
+            "CREATED FILE: {$filename}\n",
+            FILE_APPEND
+        );
+    }
+
+    return ["success" => true];
+}
+

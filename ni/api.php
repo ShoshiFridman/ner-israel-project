@@ -38,7 +38,12 @@ $allowed_functions = [
     "apply_fix_and_update_payment" => function($p) {
         return apply_fix_and_update_payment($p);
     },
+    
+    "get_tarif_for_date" => "get_tarif_for_date",
+    "calc_tikun_amount" => "calc_tikun_amount",
+    "calc_extra_tikun" => "calc_extra_tikun",
     "get_tav_kniya_kvuim" => "get_tav_kniya_kvuim",
+
     "save_tav_kniya_kavua" => "save_tav_kniya_kavua",
     "save_fixed_tavim" => "save_fixed_tavim",
 
@@ -48,7 +53,9 @@ $allowed_functions = [
     "createMilga" => "createMilga",
     "applyGeneralDepositToTashlumim" => "applyGeneralDepositToTashlumim",
 
-    
+    "get_masav_rows" => "get_masav_rows",
+    "create_masav_files" => "create_masav_files",
+
     // הוסיפי כאן פונקציות נוספות לפי הצורך
 ];
 
