@@ -218,13 +218,14 @@ if (maaserKvua!=0) {
       row.sugya_summary = parseInt(a["sugya_summary"]) || 0;
       row.hasSugya = true;
     }
+    //לטפל במשפחות כגרנג'ווד
    row.actions = `
    <button class="fix-btn" title="עריכת תיקון" ${!isCurrentMonth ? "disabled" : ""} onclick="openFixForm(${row.avrech_id}, '${row.שם}')">✏️</button>
    <button class="fix-btn" title="פירוט תיקונים" onclick="showFixDetails(${row.avrech_id})">ℹ️</button>
 
  `;
  
-
+ 
  
     const fixKey = String(row.avrech_id);
 
@@ -271,6 +272,8 @@ if (maaserKvua!=0) {
   row["ישראשראי"] = israDefault;
   row["נר ישראל"] = row["סכום סופי לאחר מעשר"] -row["ישראשראי"];
   row["בית יצחק"] = parseFloat(a["בית_יצחק"] || 0);
+  row["בי פאגי"] = parseFloat(a["בית_יצחק_פאגי"] || 0);
+
   row["גמח נר ישראל"] = parseFloat(a["גמח_נר_ישראל"] || 0);
 
   row["תוים"] = parseFloat(a["תוים"] || 0);
@@ -280,8 +283,8 @@ if (maaserKvua!=0) {
     row._original_other = row["נר ישראל"];
     /*if (row["תוים"] > 0) {
       updateIsrashrayAndOther(row);
-    }//
-    if (row["תוים"] > 0||row["בית יצחק"] > 0||row["גמח נר ישראל"] > 0) {
+    }/
+    if (row["תוים"] > 0||row["בית יצחק"] > 0||row["גמח נר ישראל"] > 0||row["בי פאגי"]>0) {
       updateIsrashrayAndOther(row);
     }
     
@@ -341,6 +344,8 @@ headers["מעשר באחוזים"] = "מעשר באחוזים";
  headers["ישראשראי"] = "ישראשראי";
  headers["נר ישראל"] = "נר ישראל";
  headers["בית יצחק"] = "בית יצחק";
+ headers["בי פאגי"] = "בי פאגי";
+
  headers["גמח נר ישראל"] = "גמח נר ישראל";
 
  headers["תוים"] = "תוים";
@@ -383,6 +388,8 @@ fieldtypes["חנות תוים"] = "combo";
 fieldtypes["שמור כקבוע"] = "button";
 
 fieldtypes["בית יצחק"] = "numeric";
+fieldtypes["בי פאגי"] = "numeric";
+
 fieldtypes["גמח נר ישראל"] = "numeric";
 
 
@@ -420,7 +427,7 @@ fieldtypes["גמח נר ישראל"] = "numeric";
 
       // עדכון שדה בשורה
       row[field] = value;
-      if (field === "תוים"||field === "בית יצחק"||field === "גמח נר ישראל") {
+      if (field === "תוים"||field === "בית יצחק"||field === "גמח נר ישראל"||field === "בי פאגי") {
             //tbl.data[rowIndex]["תוים"] = parseFloat(value) || 0;
 
         updateIsrashrayAndOther(row); // פונקציית חישוב שאתה יוצר
@@ -482,6 +489,16 @@ fieldtypes["גמח נר ישראל"] = "numeric";
 */
 
 async function refreshAvrechim(e) {
+  console.log("📌 refreshAvrechim התחילה לרוץ");
+
+  // 🛑 חסימה אם אין תאריך
+  const monthVal = document.getElementById("hebMonth")?.value;
+  const yearVal = document.getElementById("hebYear")?.value;
+
+  if (!monthVal || !yearVal) {
+    console.warn("⛔ יציאה מוקדמת - אין חודש/שנה");
+    return;
+  }
   console.log("📌 refreshAvrechim התחילה לרוץ");
 
   const changedId = e?.target?.id;
@@ -644,13 +661,14 @@ if (maaserKvua!=0) {
       row.sugya_summary = parseInt(a["sugya_summary"]) || 0;
       row.hasSugya = true;
     }
+    //לטפל במשפחות כגרנג'ווד
    row.actions = `
    <button class="fix-btn" title="עריכת תיקון" ${!isCurrentMonth ? "disabled" : ""} onclick="openFixForm(${row.avrech_id}, '${row.שם}')">✏️</button>
    <button class="fix-btn" title="פירוט תיקונים" onclick="showFixDetails(${row.avrech_id})">ℹ️</button>
 
  `;
  
-
+ 
  
     const fixKey = String(row.avrech_id);
 

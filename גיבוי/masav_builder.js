@@ -1,6 +1,5 @@
 const fs = require('fs');
 
-/* ========= פונקציות עזר ========= */
 const STR_PAD_LEFT = 0;
 
 function strrev(str) {
@@ -15,22 +14,6 @@ function mstr_pad(str, length, pad_string = '0', pad_type = STR_PAD_LEFT) {
   return str.padStart(length, pad_string);
 }
 
-function utf8toheb(s) {
-  const encoder = new TextEncoder();
-  const b = encoder.encode(s);
-
-  let r = [];
-  for (let i = 0; i < b.length; i++) {
-    if (b[i] === 215) {
-      i++;
-      r.push(b[i] + 80);
-    } else {
-      r.push(b[i]);
-    }
-  }
-  return Buffer.from(r);
-}
-/* ========= מחלקת MSV ========= */
 class msvwriter {
   constructor() {
     this.bank_field = 'בנק';
@@ -59,12 +42,10 @@ class msvwriter {
 
   createmsv(usersdata) {
     if (!usersdata || usersdata.length === 0) {
-      //console.log("DEBUG: usersdata empty!");
       return '';
     }
 
-    //console.log("DEBUG: creating MSV for", usersdata.length, "rows");
-    //console.log("DEBUG: first row:", usersdata[0]);
+    
 
     let s = '';
     s += this.koteret();
@@ -72,21 +53,17 @@ class msvwriter {
     this.tcount = 0;
 
     for (const line of usersdata) {
-      // בדיקת שדות חובה
       const required = [
         this.bank_field, this.branch_field, this.account_field,
         this.id_field, this.name_field, this.sum_field, this.reference_field
       ];
       for (const field of required) {
         if (!(field in line)) {
-          //console.log(`DEBUG: missing field ${field} in line:`, line);
         }
       }
 
-      // המרה לסכום מספרי
       const sumValue = Number(line[this.sum_field] !== undefined && line[this.sum_field] !== null ? line[this.sum_field] : 0);
       if (isNaN(sumValue) || sumValue === 0) {
-        //console.log("DEBUG: skipping row because sum is 0 or NaN:", line);
         continue;
       }
 
@@ -169,7 +146,6 @@ class msvwriter {
   }
 }
 
-/* ========= הרצה ========= */
 
 if (!process.argv[2]) {
   console.error('Missing input JSON file');
@@ -177,13 +153,8 @@ if (!process.argv[2]) {
 }
 
 const inputFile = process.argv[2];
-//console.log("DEBUG: input file path:", inputFile);
 
 const data = JSON.parse(fs.readFileSync(inputFile, 'utf8'));
-//console.log("DEBUG: input data keys:", Object.keys(data));
-//console.log("DEBUG: rows length:", data.rows.length);
-
-
 
 const msv = new msvwriter();
 msv.setmsvconfig(
@@ -193,11 +164,5 @@ msv.setmsvconfig(
 );
 
 const result = msv.createmsv(data.rows);
-const ansiBuffer = utf8toheb(result);
 
-const outputFile =
-  `C:/xampp/htdocs/dev_s/masav/${data.institution_name}_${Date.now()}.001`;
-
-fs.writeFileSync(outputFile, ansiBuffer);
-
-
+process.stdout.write(result);
