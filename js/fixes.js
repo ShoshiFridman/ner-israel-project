@@ -376,7 +376,7 @@ const apiData = {
   חודש_תיקון,
   שנה_תיקון,
   תעריף_תוספת,
-  סכום_אחר_מעשר: parseFloat(tdMaaser?.innerText || "0").toFixed(2)
+  סכום_אחר_מעשר: parseFloat(tdMaaser?.innerText || "0")
 
  // ישראשראי: parseFloat(tdIsra?.innerText || "0").toFixed(2),
  // תשלום_אחר: parseFloat(tdOther?.innerText || "0").toFixed(2)
@@ -404,7 +404,7 @@ if (isTosefet) {
       חודש_תיקון,
       שנה_תיקון,
       סוג_תיקון,
-      סכום_אחר_מעשר: parseFloat(tdMaaser?.innerText || "0").toFixed(2)
+      סכום_אחר_מעשר: parseFloat(tdMaaser?.innerText || "0")
 
      // ישראשראי: parseFloat(tdIsra?.innerText || "0").toFixed(2),
      // תשלום_אחר: parseFloat(tdOther?.innerText || "0").toFixed(2)
@@ -429,7 +429,7 @@ const res2 = await api("apply_fix_and_update_payment", apiApplyData);
       const tdFix = updatedRow?.querySelector('td[data-field="סכום תיקונים"]');
 
       const mivchanimAfter = tdMivchanimAfter ? parseFloat(tdMivchanimAfter.innerText) : 0;
-      const diff = +(mivchanimAfter - mivchanimBefore).toFixed(2);
+      const diff = +(mivchanimAfter - mivchanimBefore);
 
       if (tdFix && !isNaN(diff) && diff !== 0) {
         const currentFix = parseFloat(tdFix.innerText || "0") || 0;

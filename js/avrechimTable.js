@@ -11,7 +11,7 @@ function renderAvrechimTable(data) {
       chabura_pe: ['t', true, 'true', 1, '1'].includes(a["chabura_pe"]) ? "כן" : "לא",
       chabura_ktav: ['t', true, 'true', 1, '1'].includes(a["chabura_ktav"]) ? "כן" : "לא",
       sugya_summary: a["sugya_summary"] || 0,
-      סכום: "0.00",
+      סכום: 0,
     }));
  
 
@@ -39,6 +39,15 @@ function renderAvrechimTable(data) {
         monthly_test: ["כן", "לא"],
         chabura_pe: ["כן", "לא"],
         chabura_ktav: ["כן", "לא"],
+      },
+      columnWidths: { // 🔥 הכי חשוב לצמצום
+        שם: 130,
+        weekly_count: 45,
+        monthly_test: 50,
+        chabura_pe: 50,
+        chabura_ktav: 55,
+        sugya_summary: 50,
+        סכום: 75
       },
       readonlyFields: ["שם", "סכום"],
       
@@ -105,8 +114,8 @@ function renderAvrechimTable(data) {
   
       const tdMivchanim = rowEl?.querySelector('td[data-field="סכום מבחנים"]');
       const tdChaburot = rowEl?.querySelector('td[data-field="סכום חבורות"]');
-      if (tdMivchanim) tdMivchanim.innerText = sumMivchanim.toFixed(2);
-      if (tdChaburot) tdChaburot.innerText = sumChaburot.toFixed(2);
+      if (tdMivchanim) tdMivchanim.innerText = Math.round(sumMivchanim);
+      if (tdChaburot) tdChaburot.innerText = Math.round(sumChaburot);
   
       // ✅ סכום כולל סופי = בסיס + שמיס + סדר + מבחנים + חבורות + תיקונים
       const base = parseFloat(row["שכר בסיס"] || 0);
@@ -114,13 +123,13 @@ function renderAvrechimTable(data) {
       const sdr = parseFloat(row["סך סדר זכאי"] || 0);
       const fix = parseFloat(row["סכום תיקונים"] || 0);
   
-      const total = (base + sm + sdr + sumMivchanim + sumChaburot + fix).toFixed(2);
+      const total = (base + sm + sdr + sumMivchanim + sumChaburot + fix);
       const tdTotal = rowEl?.querySelector('td[data-field="סכום כולל"]');
       if (tdTotal) tdTotal.innerText = total;
   
       // שמירה חזרה לאובייקט עצמו
-      row["סכום מבחנים"] = sumMivchanim.toFixed(2);
-      row["סכום חבורות"] = sumChaburot.toFixed(2);
+      row["סכום מבחנים"] = sumMivchanim;
+      row["סכום חבורות"] = sumChaburot;
       row["סכום כולל"] = total;
 
 

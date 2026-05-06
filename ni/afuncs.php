@@ -186,7 +186,7 @@ SELECT
   
   COALESCE(pay."תווי_קניה_שח", tav."סכום", 0) AS "תוים",
   COALESCE(pay."חנות_תו", tav."חנות") AS "חנות_תוים",
-  pay."בסיס"AS "base",pay."שמירת_סדרים" AS "sm",pay."סך_סדר_זכאי" AS "sdarim_Z_sum",h."sdarim_Z",
+  COALESCE(pay."בסיס", tarif."תעריף בסיס") AS "base",pay."שמירת_סדרים" AS "sm",pay."סך_סדר_זכאי" AS "sdarim_Z_sum",h."sdarim_Z",
   COALESCE(tosafot."תוספות", '[]'::jsonb) AS "תוספות"
 FROM "אברכים" a
 JOIN "קבוצות" k ON a."קבוצה" = k."שם"
@@ -196,6 +196,13 @@ LEFT JOIN "h_to_office" h ON a."תז" = h."tz"/* AND h."m" = $$month_param AND h
 LEFT JOIN "תווי_קניה_קבועים" tav ON tav."אברך_id" = a."אברך_id" AND tav."פעיל" = TRUE
 LEFT JOIN "תשלומים" pay ON pay.avrech_id = a."אברך_id"
   AND pay."חודש" = $$month_param AND pay."שנה" = $$year_param
+  LEFT JOIN "תעריפים" tarif ON tarif."קוד סניף" = k."סניף_id"
+  AND tarif."סטטוס" = 'כן'
+  AND tarif."תאריך התחלה" <= CURRENT_DATE
+  AND (
+      tarif."תאריך סיום" IS NULL
+      OR tarif."תאריך סיום" >= CURRENT_DATE
+  )
 LEFT JOIN LATERAL (
   SELECT jsonb_agg(
     jsonb_build_object(
@@ -647,14 +654,14 @@ function add_fix(array $p) {
 
     ]); 
     */
-    apply_fix_and_update_payment([
+    /*apply_fix_and_update_payment([
         "avrech_id" => $avrech_id,
         "חודש" => $month,
         "שנה" => $year,
         "חודש_תיקון" => $fix_month ?? $month,
         "שנה_תיקון" => $fix_year ?? $year,
         "סוג_תיקון" => $p['סוג_תיקון']
-    ]);
+    ]);*/
     
     return ['success' => true, 'id' => $id];
 }
@@ -896,6 +903,9 @@ function apply_fix_and_update_payment($p) {
     }
 
     /* ================= חישוב סכום תיקון חדש ================= */
+//  error_log("\n\n\nNEW STACKTRACE FOR TOSEFET CALCULATION (type: $type, tosefetName: $tosafetName, amount: $amount):");
+//  error_log(print_r(debug_backtrace(), true));
+
     $amount = 0;
 
     if ($type === 'מעשר מתוספת חג') {
@@ -915,8 +925,8 @@ function apply_fix_and_update_payment($p) {
         );
         if (!$resTosefet)
             return ["error"=>"לא נמצא תעריף לתוספת $tosafetName"];
-        $amount = floatval($resTosefet["תעריף"]);
 
+        $amount = floatval($resTosefet["תעריף"]);
     } elseif ($type === 'אחר') {
         $amount = floatval($p["סכום_חופשי"] ?? 0);
         if ($amount == 0)
@@ -1202,7 +1212,7 @@ function save_or_fix_payments($rows) {
         $fix_type = $r["סוג_תיקון"] ?? null;
      
         $is_fix = isset($r["is_fix"]) && $r["is_fix"]; // האם תיקון מצטבר
-
+        $base_salary = isset($r["בסיס"]) ? floatval($r["בסיס"]) : 0;
         $base_sum = isset($r["סכום"]) ? floatval($r["סכום"]) : 0;
         $fix_amount = isset($r["סכום_תיקונים"]) ? floatval($r["סכום_תיקונים"]) : 0;
         
@@ -1314,8 +1324,11 @@ $other_pay-=$half;
     $extra_vals = "";
     $extra_update = "";
 
-    $params = [$avrech_id, $month, $year, $base_sum, $fix_amount, $kolel_sum];
-    $param_index = 7;
+   // $params = [$avrech_id, $month, $year, $base_sum, $fix_amount, $kolel_sum];
+   error_log("base_salary:");
+error_log(print_r($base_salary, true));
+   $params = [$avrech_id, $month, $year, $base_sum, $fix_amount, $kolel_sum, $base_salary];
+    $param_index = 8;
 
     if (!is_null($isra)) {
         $extra_fields .= ', ישראשראי';
@@ -1358,7 +1371,7 @@ $other_pay-=$half;
         $extra_vals .= ", \$$param_index";
         $extra_update .= ", בית_יצחק = \$$param_index";
         $params[] = $betyitzhak;
-        $param_index++;
+        $param_index++;}
         if (!is_null($betyitzhakPagi)) {
             $extra_fields .= ', בית_יצחק_פאגי';
             $extra_vals .= ", \$$param_index";
@@ -1374,14 +1387,27 @@ $other_pay-=$half;
     }
 
     $sql = <<<SQL
-        INSERT INTO "תשלומים" (avrech_id, "חודש", "שנה", סכום_מבחנים, סכום_תיקונים, סכום_כולל $extra_fields)
-        VALUES ($1, $2, $3, $4, $5, $6 $extra_vals)
-        ON CONFLICT (avrech_id, "חודש", "שנה") DO UPDATE SET
-            סכום_מבחנים = $4,
-            סכום_תיקונים = $5,
-            סכום_כולל = $6
-            $extra_update
-    SQL;
+    INSERT INTO "תשלומים" (
+        avrech_id,
+        "חודש",
+        "שנה",
+        סכום_מבחנים,
+        סכום_תיקונים,
+        סכום_כולל,
+        "בסיס"
+        $extra_fields
+    )
+    VALUES (
+        $1, $2, $3, $4, $5, $6, $7
+        $extra_vals
+    )
+    ON CONFLICT (avrech_id, "חודש", "שנה") DO UPDATE SET
+        סכום_מבחנים = $4,
+        סכום_תיקונים = $5,
+        סכום_כולל = $6,
+        "בסיס" = $7
+        $extra_update
+SQL;
 }
 
 error_log("🔄 מבצע שמירה למסד עם השאילתה: $sql");
@@ -1391,7 +1417,6 @@ doq($sql, $params);
 }
 
 return ["success" => true];
-}
 }
 
 
@@ -1508,12 +1533,18 @@ function save_fixed_tavim($p) {
     return ["success" => true];
 }*/
 function update_deposits_from_payments($p) {
+    
     $month = $p["חודש"] ?? null;
     $year = $p["שנה"] ?? null;
 
     if (!$month || !$year) {
         return ["success" => false, "error" => "חסר חודש או שנה"];
     }
+    /*?*/
+    if (is_first_payment_done($month, $year)) {
+        return ["success" => false, "error" => "כבר בוצעה פעימה ראשונה לחודש זה"];
+    }
+        /*?*/
 
     // שליפת כל התשלומים עבור החודש והשנה
     $payments = queryasarray("
@@ -1555,6 +1586,15 @@ function update_deposits_from_payments($p) {
 
     // יצירת קבצי מס"ב לאחר הזנת הפקדות
     create_masav_files($month, $year);
+        /*?*/
+
+    doq("
+    INSERT INTO סטטוס_הפקדות (חודש, שנה, בוצעה_פעימה_ראשונה)
+    VALUES ($1,$2,'כן')
+    ON CONFLICT (חודש, שנה)
+    DO UPDATE SET בוצעה_פעימה_ראשונה='כן'
+", [$month, $year]);
+    /*?*/
 
     // החזרת JSON תקין ל-JS
     return ["success" => true];
@@ -1598,7 +1638,9 @@ function other_deposit($p) {
     $year = $p["שנה"] ?? null;
 
     if (!$month || !$year) return ["success" => false, "error" => "חסר חודש או שנה"];
-
+    if (!is_first_payment_done($month, $year)) {
+        return ["success" => false, "error" => "יש לבצע קודם פעימה ראשונה"];
+    }
     // שליפת הסכומים המעודכנים מהתשלומים
     $payments = queryasarray("
         SELECT avrech_id, תשלום_אחר,בית_יצחק_פאגי, בית_יצחק, גמח_נר_ישראל
@@ -2163,4 +2205,13 @@ function create_masav_files($month, $year) {
     }
 
     return ["success" => true];
+}
+function is_first_payment_done($month, $year) {
+    $row = queryasrow("
+        SELECT בוצעה_פעימה_ראשונה 
+        FROM סטטוס_הפקדות
+        WHERE חודש=$1 AND שנה=$2
+    ", [$month, $year]);
+
+    return $row && $row["בוצעה_פעימה_ראשונה"] == "כן";
 }

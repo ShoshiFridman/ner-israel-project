@@ -127,9 +127,10 @@ async function saveAllTests() {
         avrech_id: row.avrech_id,
         חודש: monthName,
         שנה: window.selectedHebYearText,
-        סכום: total.toFixed(2),
-        סכום_תיקונים: fixAmount.toFixed(2),
+        סכום: total,
+        סכום_תיקונים: fixAmount,
        סכום_כולל: (total + fixAmount+sofi),       //.toFixed(2),
+       בסיס: base,
        maanakIsra:0,
        תווי_קניה_שח:sumTav,
        חנות_תו:shopTav,
@@ -191,13 +192,23 @@ document.addEventListener("DOMContentLoaded", async () => {
     // קוראים פעם אחת בלבד לפונקציה שמגדירה חודש ושנה ברירת מחדל
     setDefaultHebrewMonthAndYear();
     initPrevMonths();
+    loadDepositStatus();
     // מאזינים לשינויים בסניף, קבוצה, חודש ושנה
     document.getElementById("snifSelect").addEventListener("change", refreshAvrechim);
     document.getElementById("groupSelect").addEventListener("change", refreshAvrechim);
-    document.getElementById("hebMonth").addEventListener("change", refreshAvrechim);
-    document.getElementById("hebYear").addEventListener("change", () => {
+    //document.getElementById("hebMonth").addEventListener("change", refreshAvrechim);
+    document.getElementById("hebMonth").addEventListener("change", () => {
+      refreshAvrechim();
+      loadDepositStatus(); // 👈 חובה
+    });
+    /*document.getElementById("hebYear").addEventListener("change", () => {
       populateHebrewMonths();  // בעת שינוי שנה נטען מחדש חודשים לפי שנת מעוברת
       refreshAvrechim();
+    });*/
+    document.getElementById("hebYear").addEventListener("change", () => {
+      populateHebrewMonths();
+      refreshAvrechim();
+      loadDepositStatus(); // 👈 חובה
     });
 
     document.getElementById("avrechSearch").addEventListener("input", filterAvrechimByName);
@@ -330,7 +341,7 @@ function applyGeneralDeposit() {
 }
 
 
-function firstPayment() {
+/*function firstPayment() {
   const month = window.selectedHebMonthName;
   const year = window.selectedHebYearText;
 
@@ -347,8 +358,70 @@ console.log(month+"  "+year);
       alert("❌ שגיאה: " + res.error);
     }
   });
+}*/
+function firstPayment() {
+  const month = window.selectedHebMonthName;
+  const year = window.selectedHebYearText;
+
+  if (!month || !year) {
+    alert("יש לבחור חודש ושנה.");
+    return;
+  }
+
+  if (!confirm("האם אתה בטוח שברצונך ליצור הפקדות לכל האברכים?")) return;
+
+  const btn = document.getElementById("btnFirst");
+  if (btn) btn.disabled = true;
+
+  api("update_deposits_from_payments", { חודש: month, שנה: year })
+  .then(res => {
+    console.log(res);
+
+    if (!res.success) {
+      alert("⚠️ " + res.error);
+      return;
+    }
+
+    alert("בוצע בהצלחה");
+  })
+  .catch(err => {
+    alert("⚠️ " + err.message);
+  });
 }
 function otherPayment() {
+  const month = window.selectedHebMonthName;
+  const year = window.selectedHebYearText;
+
+  if (!month || !year) {
+    alert("יש לבחור חודש ושנה.");
+    return;
+  }
+
+  if (!confirm("האם אתה בטוח שברצונך ליצור פעימה חדשה?")) return;
+
+  const btn = document.getElementById("btnOther");
+  if (btn) btn.disabled = true;
+
+  api("other_deposit", { חודש: month, שנה: year })
+    .then(function (res) {
+      console.log(res);
+
+      if (!res.success) {
+        alert("⚠️ " + res.error);
+        return;
+      }
+
+      alert("✅ פעימה נוספת בוצעה בהצלחה.");
+    })
+    .catch(function (err) {
+      console.error(err);
+      alert("⚠️ " + (err.message || "שגיאה לא צפויה"));
+    })
+    .finally(function () {
+      if (btn) btn.disabled = false;
+    });
+}
+/*function otherPayment() {
   const month = window.selectedHebMonthName;
   const year = window.selectedHebYearText;
 
@@ -364,8 +437,31 @@ function otherPayment() {
       alert("❌ שגיאה: " + res.error);
     }
   });
-}
+}*/
+function loadDepositStatus() {
+  const month = window.selectedHebMonthName;
+  const year = window.selectedHebYearText;
 
+  if (!month || !year) return;
+
+  api("get_deposit_status", { חודש: month, שנה: year }, function(res) {
+    updateButtonsByStatus(res);
+  });
+}
+function updateButtonsByStatus(status) {
+  const btnFirst = document.getElementById("btnFirst");
+  const btnOther = document.getElementById("btnOther");
+
+  if (!btnFirst || !btnOther) return;
+
+  if (status.בוצעה_פעימה_ראשונה === "כן") {
+    btnFirst.disabled = true;
+    btnOther.disabled = false;
+  } else {
+    btnFirst.disabled = false;
+    btnOther.disabled = true;
+  }
+}
 /*async function createMonthlyMilga() {
   const month = window.selectedHebMonthName;
   const year = window.selectedHebYearText;

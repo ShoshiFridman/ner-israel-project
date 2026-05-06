@@ -27,7 +27,13 @@ async function showForm() {
         "ערב", "ביהז", "תלוש", "תלוש_חדש", "תעריף_שמיט"
       ]*/
       [
-        "מבחן שבועי", "מבחן חודשי", "חבורה", "סוגיה", "ערב", "ביהז"
+        "מבחן שבועי",
+        "מבחן חודשי",
+        "תעריף_בסיס",
+        "חבורה",
+        "סוגיה",
+        "ערב",
+        "ביהז"
       ]
       
         .map(id => `<label>${id.replace("_", " ")}: </label><input type="number" id="${id}" required style="font-size:1rem; padding:5px" />`)
@@ -56,7 +62,7 @@ async function showForm() {
       //"תעריף שמיס": +document.getElementById("תעריף_שמיט").value,
       "תעריף מבחן שבועי": +document.getElementById("מבחן שבועי").value,
       "תעריף מבחן חודשי": +document.getElementById("מבחן חודשי").value,
-      //"תעריף בסיס": +document.getElementById("בסיס").value,
+      "תעריף בסיס": +document.getElementById("תעריף_בסיס").value,
      // "תעריף בסיס חדש": +document.getElementById("בסיס_חדש").value,
       "תעריף חבורה": +document.getElementById("חבורה").value,
       "תעריף סוגיה": +document.getElementById("סוגיה").value,
@@ -97,8 +103,7 @@ async function showTable() {
         <th>תאריך סיום</th><th>תאריך סיום (עברי)</th>
         <th>סטטוס</th><th>מבחן שבועי</th><th>מבחן חודשי</th>
         <th>חבורה</th><th>סוגיה</th><th>ערב</th>
-        <th>ביהז</th><th>מקור</th>
-      </tr>
+        <th>ביהז</th><th>תעריף בסיס</th><th>מקור</th>      </tr>
     </thead><tbody id="tarifBody">`;
 
   const sorted = data.sort((a, b) => b["סטטוס"] === "כן" ? 1 : -1);
@@ -119,8 +124,8 @@ async function showTable() {
       <td>${row["תעריף סוגיה"]}</td>
       <td>${row["תעריף כולל ערב"]}</td>
       <td>${row["תעריף כולל ביהז"]}</td>
-      
-      <td>${row["מקור הפקדה"]}</td>
+<td>${row["תעריף בסיס"] ?? 0}</td>
+<td>${row["מקור הפקדה"]}</td>
     </tr>`;
   }
 

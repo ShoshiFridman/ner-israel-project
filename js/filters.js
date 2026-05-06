@@ -603,14 +603,17 @@ const fixAmounts = fixPayments?.payments || {};
   const rows = finalAvrechim.map((a) => {
     
     const snifId = a["סניף_id"] || snif_id;
-
+    console.log("=== חבורה בדיקה ===");
+    console.log("snifId:", snifId);
+    console.log("currentTarifim[snifId]:", currentTarifim[snifId]);
     // מחפשים תעריף פעיל של הסניף
     const tarifList = currentTarifim[snifId] || [];
     const activeTarif = tarifList.find(t => t["סטטוס"] === "כן");
 
     // האם הסניף משלם על סיכום סוגיות (סוגיה > 0)
     const hasSugya = activeTarif && Number(activeTarif["תעריף סוגיה"]) > 0;
-    const base = parseFloat(a["base"] || 0);
+   // const base = parseFloat(a["base"] || 0);
+   const base = parseFloat(activeTarif["תעריף בסיס"] || 0);
     const sm = parseFloat(a["sm"] || 0);
     const sdr = parseFloat(a["sdarim_Z_sum"] || 0);
     const sumFix = parseFloat(a["סכום_תיקונים"] || 0);  // זה מכיל אצלך רק סכום + תיקונים
@@ -622,24 +625,24 @@ const fixAmounts = fixPayments?.payments || {};
       avrech_id: a["אברך_id"],
       snif_id: snifId,
       שם: `${a["משפחה"]} ${a["פרטי"]}`,
-      "שכר בסיס": base.toFixed(2),
-      "שמיס": sm.toFixed(2),
+      "שכר בסיס": base,
+      "שמיס": sm,
       "סדר זכאי": a["sdarim_Z"] ?? 0,
-      "סך סדר זכאי": sdr.toFixed(2),
+      "סך סדר זכאי": Math.round(sdr),
     
       weekly_count: a["weekly_count"] || 0,
       monthly_test: ['t', true, 'true', 1, '1'].includes(a["monthly_test"]) ? "כן" : "לא",
       chabura_pe: ['t', true, 'true', 1, '1'].includes(a["chabura_pe"]) ? "כן" : "לא",
       chabura_ktav: ['t', true, 'true', 1, '1'].includes(a["chabura_ktav"]) ? "כן" : "לא",
     
-      "סכום מבחנים": "0.00", // יתעדכן אחר כך
-      "סכום חבורות": "0.00", // יתעדכן אחר כך
-      "סכום תיקונים": sumFix.toFixed(2), // זה רק מה שיש במסד (ולא הבסיס)
+      "סכום מבחנים": 0, // יתעדכן אחר כך
+      "סכום חבורות": 0, // יתעדכן אחר כך
+      "סכום תיקונים":Math.round(sumFix), // זה רק מה שיש במסד (ולא הבסיס)
       //"סכום כולל": (base + sm + sdr + sumFix+testSum+chaburaSum).toFixed(2), // בשלב זה בלי מבחנים וחבורות
-      "סכום כולל": (kolel).toFixed(2), 
+      "סכום כולל": Math.round(kolel), 
 
-      "מעשר קבוע": a["מעשר_קבוע"] !== null ? Number(a["מעשר_קבוע"]).toFixed(2) : "0.00",
-      "מעשר באחוזים": a["מעשר_באחוזים"] !== null ? Number(a["מעשר_באחוזים"]).toFixed(2) : "0.00",
+      "מעשר קבוע": a["מעשר_קבוע"] !== null ? Number(a["מעשר_קבוע"]) : 0,
+      "מעשר באחוזים": a["מעשר_באחוזים"] !== null ? Number(a["מעשר_באחוזים"]) : 0,
       "סכום סופי לאחר מעשר":"0"
     
 
@@ -654,7 +657,7 @@ const fixAmounts = fixPayments?.payments || {};
 if (maaserKvua!=0) {
   totalAfterMaaser -= maaserKvua;
 }
- row["סכום סופי לאחר מעשר"] = totalAfterMaaser.toFixed(2);
+ row["סכום סופי לאחר מעשר"] = Math.round(totalAfterMaaser);
 
    
     if (hasSugya) {
@@ -672,7 +675,7 @@ if (maaserKvua!=0) {
  
     const fixKey = String(row.avrech_id);
 
-  row["סכום תיקונים"] = fixAmounts[fixKey] !== undefined ? Number(fixAmounts[fixKey]).toFixed(2) : "0.00";
+  row["סכום תיקונים"] = fixAmounts[fixKey] !== undefined ? Number(fixAmounts[fixKey]): 0;
   const city = (a["עיר"] || "").toString().trim();
   const group = (a["קבוצה"] || "").toString().trim();
   let tosafot = a["תוספות"] || "[]";
@@ -846,7 +849,7 @@ fieldtypes["גמח נר ישראל"] = "numeric";
 
   // שדות נעולים וניתנים לעריכה לפי חודש
   const readonlyFields = [
-    "שם", "סכום מבחנים", "סכום חבורות", "סכום תיקונים", "שכר בסיס", "שמיס", "סדר זכאי","מעשר קבוע", "מעשר באחוזים","סך סדר זכאי","סכום כולל","סכום סופי לאחר מעשר","ישראשראי","נר ישראל"
+    "שם", "סכום מבחנים", "סכום חבורות", "סכום תיקונים", "שמיס", "סדר זכאי","מעשר קבוע", "מעשר באחוזים","סך סדר זכאי","סכום כולל","סכום סופי לאחר מעשר","ישראשראי","נר ישראל"
   ];
   
   let editableFields = [];

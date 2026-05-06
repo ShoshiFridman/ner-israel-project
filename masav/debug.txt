@@ -147,3 +147,339 @@ INSIDE get_masav_rows for hefresh_gmach_ner_yisrael
 ROWS count: 0
 AFTER get_masav_rows
 SKIPPED gmach_ner_yisrael – no rows returned
+create_masav_files CALLED for אייר תשפו
+source: ner_yisrael
+BEFORE get_masav_rows
+INSIDE get_masav_rows for hefresh_ner_yisrael
+ROWS count: 312
+AFTER get_masav_rows
+rows count for ner_yisrael: 312
+RUNNING: node "C:\xampp\htdocs\dev_s\js\masav_builder.js" "C:\Users\User\AppData\Local\Temp\mas6FC3.tmp"
+node output length: 0
+ERROR: node returned empty output for ner_yisrael
+source: beit_yitzchak
+BEFORE get_masav_rows
+INSIDE get_masav_rows for hefresh_beit_yitzchak
+ROWS count: 312
+AFTER get_masav_rows
+rows count for beit_yitzchak: 312
+RUNNING: node "C:\xampp\htdocs\dev_s\js\masav_builder.js" "C:\Users\User\AppData\Local\Temp\mas7041.tmp"
+node output length: 0
+ERROR: node returned empty output for beit_yitzchak
+source: beit_yitzchak_pagi
+BEFORE get_masav_rows
+INSIDE get_masav_rows for hefresh_beit_yitzchak_pagi
+ROWS count: 1
+AFTER get_masav_rows
+rows count for beit_yitzchak_pagi: 1
+RUNNING: node "C:\xampp\htdocs\dev_s\js\masav_builder.js" "C:\Users\User\AppData\Local\Temp\mas70CF.tmp"
+node output length: 0
+ERROR: node returned empty output for beit_yitzchak_pagi
+source: gmach_ner_yisrael
+BEFORE get_masav_rows
+INSIDE get_masav_rows for hefresh_gmach_ner_yisrael
+ROWS count: 312
+AFTER get_masav_rows
+rows count for gmach_ner_yisrael: 312
+RUNNING: node "C:\xampp\htdocs\dev_s\js\masav_builder.js" "C:\Users\User\AppData\Local\Temp\mas713D.tmp"
+node output length: 0
+ERROR: node returned empty output for gmach_ner_yisrael
+create_masav_files CALLED for אייר תשפו
+source: ner_yisrael
+BEFORE get_masav_rows
+INSIDE get_masav_rows for hefresh_ner_yisrael
+ROWS count: 312
+AFTER get_masav_rows
+rows count for ner_yisrael: 312
+RUNNING: node "C:\xampp\htdocs\dev_s\js\masav_builder.js" "C:\Users\User\AppData\Local\Temp\masED25.tmp"
+node output length: 0
+ERROR: node returned empty output for ner_yisrael
+source: beit_yitzchak
+BEFORE get_masav_rows
+INSIDE get_masav_rows for hefresh_beit_yitzchak
+ROWS count: 0
+AFTER get_masav_rows
+SKIPPED beit_yitzchak – no rows returned
+source: beit_yitzchak_pagi
+BEFORE get_masav_rows
+INSIDE get_masav_rows for hefresh_beit_yitzchak_pagi
+ROWS count: 0
+AFTER get_masav_rows
+SKIPPED beit_yitzchak_pagi – no rows returned
+source: gmach_ner_yisrael
+BEFORE get_masav_rows
+INSIDE get_masav_rows for hefresh_gmach_ner_yisrael
+ROWS count: 0
+AFTER get_masav_rows
+SKIPPED gmach_ner_yisrael – no rows returned
+create_masav_files CALLED for אייר תשפו
+source: ner_yisrael
+BEFORE get_masav_rows
+INSIDE get_masav_rows for hefresh_ner_yisrael
+ROWS count: 312
+AFTER get_masav_rows
+rows count for ner_yisrael: 312
+RUNNING: node "C:\xampp\htdocs\dev_s\js\masav_builder.js" "C:\Users\User\AppData\Local\Temp\masD491.tmp"
+node output length: 0
+ERROR: node returned empty output for ner_yisrael
+source: beit_yitzchak
+BEFORE get_masav_rows
+INSIDE get_masav_rows for hefresh_beit_yitzchak
+ROWS count: 0
+AFTER get_masav_rows
+SKIPPED beit_yitzchak – no rows returned
+source: beit_yitzchak_pagi
+BEFORE get_masav_rows
+INSIDE get_masav_rows for hefresh_beit_yitzchak_pagi
+ROWS count: 0
+AFTER get_masav_rows
+SKIPPED beit_yitzchak_pagi – no rows returned
+source: gmach_ner_yisrael
+BEFORE get_masav_rows
+INSIDE get_masav_rows for hefresh_gmach_ner_yisrael
+ROWS count: 0
+AFTER get_masav_rows
+SKIPPED gmach_ner_yisrael – no rows returned
+create_masav_files CALLED for אייר תשפו
+source: ner_yisrael
+BEFORE get_masav_rows
+INSIDE get_masav_rows for hefresh_ner_yisrael
+ROWS count: 0
+AFTER get_masav_rows
+SKIPPED ner_yisrael – no rows returned
+source: beit_yitzchak
+BEFORE get_masav_rows
+INSIDE get_masav_rows for hefresh_beit_yitzchak
+ROWS count: 0
+AFTER get_masav_rows
+SKIPPED beit_yitzchak – no rows returned
+source: beit_yitzchak_pagi
+BEFORE get_masav_rows
+INSIDE get_masav_rows for hefresh_beit_yitzchak_pagi
+ROWS count: 0
+AFTER get_masav_rows
+SKIPPED beit_yitzchak_pagi – no rows returned
+source: gmach_ner_yisrael
+BEFORE get_masav_rows
+INSIDE get_masav_rows for hefresh_gmach_ner_yisrael
+ROWS count: 0
+AFTER get_masav_rows
+SKIPPED gmach_ner_yisrael – no rows returned
+create_masav_files CALLED for אייר תשפו
+source: ner_yisrael
+BEFORE get_masav_rows
+INSIDE get_masav_rows for hefresh_ner_yisrael
+ROWS count: 0
+AFTER get_masav_rows
+SKIPPED ner_yisrael – no rows returned
+source: beit_yitzchak
+BEFORE get_masav_rows
+INSIDE get_masav_rows for hefresh_beit_yitzchak
+ROWS count: 0
+AFTER get_masav_rows
+SKIPPED beit_yitzchak – no rows returned
+source: beit_yitzchak_pagi
+BEFORE get_masav_rows
+INSIDE get_masav_rows for hefresh_beit_yitzchak_pagi
+ROWS count: 0
+AFTER get_masav_rows
+SKIPPED beit_yitzchak_pagi – no rows returned
+source: gmach_ner_yisrael
+BEFORE get_masav_rows
+INSIDE get_masav_rows for hefresh_gmach_ner_yisrael
+ROWS count: 0
+AFTER get_masav_rows
+SKIPPED gmach_ner_yisrael – no rows returned
+create_masav_files CALLED for אייר תשפו
+source: ner_yisrael
+BEFORE get_masav_rows
+INSIDE get_masav_rows for hefresh_ner_yisrael
+ROWS count: 0
+AFTER get_masav_rows
+SKIPPED ner_yisrael – no rows returned
+source: beit_yitzchak
+BEFORE get_masav_rows
+INSIDE get_masav_rows for hefresh_beit_yitzchak
+ROWS count: 0
+AFTER get_masav_rows
+SKIPPED beit_yitzchak – no rows returned
+source: beit_yitzchak_pagi
+BEFORE get_masav_rows
+INSIDE get_masav_rows for hefresh_beit_yitzchak_pagi
+ROWS count: 0
+AFTER get_masav_rows
+SKIPPED beit_yitzchak_pagi – no rows returned
+source: gmach_ner_yisrael
+BEFORE get_masav_rows
+INSIDE get_masav_rows for hefresh_gmach_ner_yisrael
+ROWS count: 0
+AFTER get_masav_rows
+SKIPPED gmach_ner_yisrael – no rows returned
+create_masav_files CALLED for אייר תשפו
+source: ner_yisrael
+BEFORE get_masav_rows
+INSIDE get_masav_rows for hefresh_ner_yisrael
+ROWS count: 0
+AFTER get_masav_rows
+SKIPPED ner_yisrael – no rows returned
+source: beit_yitzchak
+BEFORE get_masav_rows
+INSIDE get_masav_rows for hefresh_beit_yitzchak
+ROWS count: 0
+AFTER get_masav_rows
+SKIPPED beit_yitzchak – no rows returned
+source: beit_yitzchak_pagi
+BEFORE get_masav_rows
+INSIDE get_masav_rows for hefresh_beit_yitzchak_pagi
+ROWS count: 0
+AFTER get_masav_rows
+SKIPPED beit_yitzchak_pagi – no rows returned
+source: gmach_ner_yisrael
+BEFORE get_masav_rows
+INSIDE get_masav_rows for hefresh_gmach_ner_yisrael
+ROWS count: 0
+AFTER get_masav_rows
+SKIPPED gmach_ner_yisrael – no rows returned
+create_masav_files CALLED for אייר תשפו
+source: ner_yisrael
+BEFORE get_masav_rows
+INSIDE get_masav_rows for hefresh_ner_yisrael
+ROWS count: 0
+AFTER get_masav_rows
+SKIPPED ner_yisrael – no rows returned
+source: beit_yitzchak
+BEFORE get_masav_rows
+INSIDE get_masav_rows for hefresh_beit_yitzchak
+ROWS count: 1
+AFTER get_masav_rows
+rows count for beit_yitzchak: 1
+RUNNING: node "C:\xampp\htdocs\dev_s\js\masav_builder.js" "C:\Users\User\AppData\Local\Temp\masA6FA.tmp"
+node output length: 0
+ERROR: node returned empty output for beit_yitzchak
+source: beit_yitzchak_pagi
+BEFORE get_masav_rows
+INSIDE get_masav_rows for hefresh_beit_yitzchak_pagi
+ROWS count: 0
+AFTER get_masav_rows
+SKIPPED beit_yitzchak_pagi – no rows returned
+source: gmach_ner_yisrael
+BEFORE get_masav_rows
+INSIDE get_masav_rows for hefresh_gmach_ner_yisrael
+ROWS count: 0
+AFTER get_masav_rows
+SKIPPED gmach_ner_yisrael – no rows returned
+create_masav_files CALLED for אייר תשפו
+source: ner_yisrael
+BEFORE get_masav_rows
+INSIDE get_masav_rows for hefresh_ner_yisrael
+ROWS count: 0
+AFTER get_masav_rows
+SKIPPED ner_yisrael – no rows returned
+source: beit_yitzchak
+BEFORE get_masav_rows
+INSIDE get_masav_rows for hefresh_beit_yitzchak
+ROWS count: 0
+AFTER get_masav_rows
+SKIPPED beit_yitzchak – no rows returned
+source: beit_yitzchak_pagi
+BEFORE get_masav_rows
+INSIDE get_masav_rows for hefresh_beit_yitzchak_pagi
+ROWS count: 0
+AFTER get_masav_rows
+SKIPPED beit_yitzchak_pagi – no rows returned
+source: gmach_ner_yisrael
+BEFORE get_masav_rows
+INSIDE get_masav_rows for hefresh_gmach_ner_yisrael
+ROWS count: 0
+AFTER get_masav_rows
+SKIPPED gmach_ner_yisrael – no rows returned
+create_masav_files CALLED for אייר תשפו
+source: ner_yisrael
+BEFORE get_masav_rows
+INSIDE get_masav_rows for hefresh_ner_yisrael
+ROWS count: 312
+AFTER get_masav_rows
+rows count for ner_yisrael: 312
+RUNNING: node "C:\xampp\htdocs\dev_s\js\masav_builder.js" "C:\Users\User\AppData\Local\Temp\masB456.tmp"
+node output length: 0
+ERROR: node returned empty output for ner_yisrael
+source: beit_yitzchak
+BEFORE get_masav_rows
+INSIDE get_masav_rows for hefresh_beit_yitzchak
+ROWS count: 1
+AFTER get_masav_rows
+rows count for beit_yitzchak: 1
+RUNNING: node "C:\xampp\htdocs\dev_s\js\masav_builder.js" "C:\Users\User\AppData\Local\Temp\masB4B5.tmp"
+node output length: 0
+ERROR: node returned empty output for beit_yitzchak
+source: beit_yitzchak_pagi
+BEFORE get_masav_rows
+INSIDE get_masav_rows for hefresh_beit_yitzchak_pagi
+ROWS count: 0
+AFTER get_masav_rows
+SKIPPED beit_yitzchak_pagi – no rows returned
+source: gmach_ner_yisrael
+BEFORE get_masav_rows
+INSIDE get_masav_rows for hefresh_gmach_ner_yisrael
+ROWS count: 0
+AFTER get_masav_rows
+SKIPPED gmach_ner_yisrael – no rows returned
+create_masav_files CALLED for אייר תשפו
+source: ner_yisrael
+BEFORE get_masav_rows
+INSIDE get_masav_rows for hefresh_ner_yisrael
+ROWS count: 312
+AFTER get_masav_rows
+rows count for ner_yisrael: 312
+RUNNING: node "C:\xampp\htdocs\dev_s\js\masav_builder.js" "C:\Users\User\AppData\Local\Temp\mas6757.tmp"
+node output length: 0
+ERROR: node returned empty output for ner_yisrael
+source: beit_yitzchak
+BEFORE get_masav_rows
+INSIDE get_masav_rows for hefresh_beit_yitzchak
+ROWS count: 1
+AFTER get_masav_rows
+rows count for beit_yitzchak: 1
+RUNNING: node "C:\xampp\htdocs\dev_s\js\masav_builder.js" "C:\Users\User\AppData\Local\Temp\mas67B5.tmp"
+node output length: 0
+ERROR: node returned empty output for beit_yitzchak
+source: beit_yitzchak_pagi
+BEFORE get_masav_rows
+INSIDE get_masav_rows for hefresh_beit_yitzchak_pagi
+ROWS count: 1
+AFTER get_masav_rows
+rows count for beit_yitzchak_pagi: 1
+RUNNING: node "C:\xampp\htdocs\dev_s\js\masav_builder.js" "C:\Users\User\AppData\Local\Temp\mas6805.tmp"
+node output length: 0
+ERROR: node returned empty output for beit_yitzchak_pagi
+source: gmach_ner_yisrael
+BEFORE get_masav_rows
+INSIDE get_masav_rows for hefresh_gmach_ner_yisrael
+ROWS count: 0
+AFTER get_masav_rows
+SKIPPED gmach_ner_yisrael – no rows returned
+create_masav_files CALLED for אייר תשפו
+source: ner_yisrael
+BEFORE get_masav_rows
+INSIDE get_masav_rows for hefresh_ner_yisrael
+ROWS count: 0
+AFTER get_masav_rows
+SKIPPED ner_yisrael – no rows returned
+source: beit_yitzchak
+BEFORE get_masav_rows
+INSIDE get_masav_rows for hefresh_beit_yitzchak
+ROWS count: 0
+AFTER get_masav_rows
+SKIPPED beit_yitzchak – no rows returned
+source: beit_yitzchak_pagi
+BEFORE get_masav_rows
+INSIDE get_masav_rows for hefresh_beit_yitzchak_pagi
+ROWS count: 0
+AFTER get_masav_rows
+SKIPPED beit_yitzchak_pagi – no rows returned
+source: gmach_ner_yisrael
+BEFORE get_masav_rows
+INSIDE get_masav_rows for hefresh_gmach_ner_yisrael
+ROWS count: 0
+AFTER get_masav_rows
+SKIPPED gmach_ner_yisrael – no rows returned

@@ -121,8 +121,12 @@
 
 
 
+/* כיווץ שדות מספריים */
 
-
+#tableContainer td input {
+    width: 45px !important;
+    text-align: center;
+}
     </style>
 </head>
 <body>
@@ -152,8 +156,9 @@
     <div class="actions-panel">
     <button class="action-btn" onclick="createMonthlyMilga()"> צור נתוני מלגה חודשית</button>
 
-    <button class="action-btn" onclick="firstPayment()">צור הפקדה ראשונה</button>
-    <button class="action-btn" onclick="otherPayment()">פעימה נוספת</button>
+    <button id="btnFirst" class="action-btn" onclick="firstPayment()">צור הפקדה ראשונה</button>
+
+<button id="btnOther" class="action-btn" onclick="otherPayment()">פעימה נוספת</button>
   <button class="action-btn" onclick="openGeneralDepositModal()">קבע מקור הפקדה כללי</button>
 
 </div>

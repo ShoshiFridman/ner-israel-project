@@ -34,10 +34,10 @@ $allowed_functions = [
 
     "save_or_fix_payments" => "save_or_fix_payments",
     
-    //"apply_fix_and_update_payment" => "apply_fix_and_update_payment",
-    "apply_fix_and_update_payment" => function($p) {
-        return apply_fix_and_update_payment($p);
-    },
+    "apply_fix_and_update_payment" => "apply_fix_and_update_payment",
+    //"apply_fix_and_update_payment" => function($p) {
+    //    return apply_fix_and_update_payment($p);
+    //},
     
     "get_tarif_for_date" => "get_tarif_for_date",
     "calc_tikun_amount" => "calc_tikun_amount",
@@ -55,7 +55,9 @@ $allowed_functions = [
 
     "get_masav_rows" => "get_masav_rows",
     "create_masav_files" => "create_masav_files",
+    "is_first_payment_done" => "is_first_payment_done",
 
+    
     // הוסיפי כאן פונקציות נוספות לפי הצורך
 ];
 

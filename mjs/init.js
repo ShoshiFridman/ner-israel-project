@@ -7,7 +7,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       const currentHebYear = getHebrewYearFromToday();
       await loadHebrewMonths(currentHebYear);
-  
+      loadDepositStatus();
+
       setDefaultHebMonth();  // <----- כאן מבצעים את בחירת ברירת המחדל
   
       document.getElementById("snifSelect").addEventListener("change", refreshAvrechim);
